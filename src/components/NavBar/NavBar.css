@@ -1,0 +1,23 @@
+.nav-bar-menu-links > a {
+  color: white;
+  font-weight: bolder;
+  text-decoration: none;
+  font-size: 1em;
+}
+
+.nav-bar-container .nav-bar {
+  display: flex;
+}
+
+.nav-bar-logo-links-container {
+  display: flex;
+  align-items: center;
+}
+
+.nav-bar-logo-links-container a {
+  color: white;
+  font-weight: bolder;
+  text-decoration: none;
+  font-size: 1em;
+  margin-right: 3em;
+}

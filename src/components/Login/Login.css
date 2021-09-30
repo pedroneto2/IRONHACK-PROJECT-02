@@ -1,0 +1,17 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-container .login-form {
+  display: flex;
+  flex-direction: column;
+  padding: 2em;
+  border: 1px solid #c4c4c4;
+  border-radius: 10px;
+}
+
+.login-container .login-form .MuiTextField-root {
+  margin-bottom: 2em;
+}
