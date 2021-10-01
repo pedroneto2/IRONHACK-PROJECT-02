@@ -16,6 +16,8 @@ import { useHistory } from "react-router";
 
 const INITIAL_CREDENTIALS = {
   name: "",
+  email: "",
+  password: "",
   profileType: "clients",
 };
 
@@ -54,7 +56,22 @@ const Register = () => {
         />
         <TextField fullWidth label="Sobrenome" variant="outlined" type="text" />
         <TextField fullWidth label="CPF" variant="outlined" type="number" />
-        <TextField fullWidth label="Email" variant="outlined" type="email" />
+        <TextField
+          fullWidth
+          name="email"
+          label="Email (será o seu login)"
+          variant="outlined"
+          type="email"
+          value={credentials.email}
+        />
+        <TextField
+          fullWidth
+          name="password"
+          label="Senha"
+          variant="outlined"
+          type="password"
+          value={credentials.password}
+        />
         <TextField fullWidth label="Telefone" variant="outlined" type="tel" />
         <TextField fullWidth label="Endereço" variant="outlined" type="text" />
         <FormControl component="fieldset">
