@@ -78,7 +78,11 @@ function NavBar({ linkList = [], children }) {
             >
               <MenuIcon />
             </IconButton>
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
+            <Box
+              sx={{
+                display: { xs: "none", sm: "block" },
+              }}
+            >
               <AuthArea />
             </Box>
           </Toolbar>
@@ -109,7 +113,7 @@ function NavBar({ linkList = [], children }) {
                 padding: "1em",
               }}
             >
-              <Divider />
+              <Divider sx={{ marginBottom: "1em", background: "white" }} />
               <AuthArea />
             </Box>
           </SwipeableDrawer>

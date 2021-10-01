@@ -63,6 +63,7 @@ const Register = () => {
           variant="outlined"
           type="email"
           value={credentials.email}
+          onChange={(e) => handleChange(e, credentials, setCredentials)}
         />
         <TextField
           fullWidth
@@ -71,6 +72,7 @@ const Register = () => {
           variant="outlined"
           type="password"
           value={credentials.password}
+          onChange={(e) => handleChange(e, credentials, setCredentials)}
         />
         <TextField fullWidth label="Telefone" variant="outlined" type="tel" />
         <TextField fullWidth label="Endereço" variant="outlined" type="text" />
