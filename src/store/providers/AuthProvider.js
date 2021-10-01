@@ -4,18 +4,17 @@ import AuthContext from "../contexts/AuthContext";
 import useAuth from "./useAuth";
 
 const AuthProvider = ({ children }) => {
-  const { authentication, loading, handleLogin, handleLogout } = useAuth();
-  const [user, setUser] = useState({});
+  const { authentication, loading, user, handleLogin, handleLogout } =
+    useAuth();
 
   return (
     <AuthContext.Provider
       value={{
         authentication,
         loading,
+        user,
         handleLogin,
         handleLogout,
-        user,
-        setUser,
       }}
     >
       {children}
