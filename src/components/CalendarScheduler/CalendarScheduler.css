@@ -1,0 +1,7 @@
+.calendar-scheduler-container .MuiInputLabel-root {
+  color: black !important;
+}
+
+.calendar-scheduler-container .MuiOutlinedInput-notchedOutline {
+  border-color: black !important;
+}
