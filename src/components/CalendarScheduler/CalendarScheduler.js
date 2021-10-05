@@ -8,12 +8,15 @@ import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DateTimePicker from "@mui/lab/DateTimePicker";
 
+import Spinner from "../Spinner/Spinner";
+
 const retrieveUsers = (
   clientID,
   professionalID,
   setClientUser,
   setProfessionalUser,
-  setMaxDate
+  setMaxDate,
+  setLoading
 ) => {
   axios
     .get("https://ironrest.herokuapp.com/venere/" + clientID)
@@ -21,7 +24,9 @@ const retrieveUsers = (
       const { schedule } = response.data;
       setClientUser({ schedule });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+    });
 
   axios
     .get("https://ironrest.herokuapp.com/venere/" + professionalID)
@@ -43,6 +48,7 @@ const retrieveUsers = (
       const maxDate = new Date();
       maxDate.setDate(maxDate.getDate() + maxDays);
       setMaxDate(maxDate);
+      setLoading(false);
     })
     .catch((err) => console.log(err));
 };
@@ -71,6 +77,8 @@ const retrieveDisabledHours = (
 };
 
 const CalendarSecheduler = ({ value, setValue, clientID, professionalID }) => {
+  const [loading, setLoading] = useState(true);
+
   const [maxDate, setMaxDate] = useState();
   const [disabledDays, setDisabledDays] = useState([]);
   const [disabledHours, setDisabledHours] = useState([]);
@@ -92,7 +100,8 @@ const CalendarSecheduler = ({ value, setValue, clientID, professionalID }) => {
       professionalID,
       setClientUser,
       setProfessionalUser,
-      setMaxDate
+      setMaxDate,
+      setLoading
     );
   }, []);
 
@@ -120,7 +129,10 @@ const CalendarSecheduler = ({ value, setValue, clientID, professionalID }) => {
               }}
             />
           )}
+          showToolbar={false}
           ampm={false}
+          loading={loading}
+          renderLoading={() => <Spinner />}
           disableHighlightToday
           views={["day", "hours"]}
           label="DateTimePicker"

@@ -1,0 +1,32 @@
+.advertising-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  min-width: 300px;
+}
+
+.ad-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 325px;
+  word-wrap: break-word;
+  box-shadow: 2px 2px 5px 5px rgba(50, 50, 50, 0.5);
+}
+
+.ad-container > img {
+  margin: 10px;
+  width: 305px;
+  height: 250px;
+}
+
+.ad-container > h3 {
+  margin: 5px;
+  width: 305px;
+}
+
+.ad-container > p {
+  margin: 5px;
+  width: 305px;
+}
