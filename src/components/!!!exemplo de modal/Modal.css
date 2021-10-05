@@ -1,0 +1,12 @@
+.professional-component-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  min-width: 325px;
+  border: 1px solid #1976d2;
+  margin: 25px auto;
+  padding: 25px;
+  border-radius: 10px;
+}

@@ -1,0 +1,18 @@
+.page-not-found-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-not-found-container > .text-container > h1 {
+  display: flex;
+  align-items: center;
+  color: #1976d2;
+  font-size: 2em;
+}
+
+.page-not-found-container > .text-container > h1 > svg {
+  font-size: 2em;
+  margin-right: 10px;
+}
