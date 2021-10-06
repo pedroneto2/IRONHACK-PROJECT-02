@@ -104,7 +104,10 @@ const Advertisings = () => {
       setRenderedAds,
       qtyRendered
     );
-    return () => clearInterval(intervalID);
+    return () => {
+      clearInterval(intervalID);
+      setIntervalID(null);
+    };
   }, []);
 
   useEffect(() => {
