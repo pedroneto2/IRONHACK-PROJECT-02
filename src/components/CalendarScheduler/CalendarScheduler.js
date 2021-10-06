@@ -76,7 +76,13 @@ const retrieveDisabledHours = (
   setDisabledHours([...allDisabledHours]);
 };
 
-const CalendarSecheduler = ({ value, setValue, clientID, professionalID }) => {
+const CalendarSecheduler = ({
+  value,
+  setValue,
+  setAccepted,
+  clientID,
+  professionalID,
+}) => {
   const [loading, setLoading] = useState(true);
 
   const [maxDate, setMaxDate] = useState();
@@ -116,6 +122,8 @@ const CalendarSecheduler = ({ value, setValue, clientID, professionalID }) => {
     );
   }, [value]);
 
+  const afterTwoHour = new Date();
+  afterTwoHour.setMinutes(120);
   return (
     <div className="calendar-scheduler-container">
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -131,13 +139,17 @@ const CalendarSecheduler = ({ value, setValue, clientID, professionalID }) => {
           )}
           showToolbar={false}
           ampm={false}
+          onAccept={() => setAccepted(true)}
+          onOpen={() => setAccepted(false)}
+          disableCloseOnSelect={false}
+          desktopModeMediaQuery="@media(min-width:0px)"
           loading={loading}
           renderLoading={() => <Spinner />}
-          disableHighlightToday
           views={["day", "hours"]}
-          label="DateTimePicker"
+          label="Selecione uma data"
           value={value}
           minDate={new Date()}
+          minTime={afterTwoHour}
           maxDate={maxDate}
           shouldDisableTime={(hour) =>
             disabledHours.some((disabledHour) => disabledHour === hour) ||

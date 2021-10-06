@@ -28,7 +28,7 @@ const Home = () => {
         color="primary"
         variant="contained"
         style={{ margin: "3em auto" }}
-        onClick={() => history.push("#")}
+        onClick={() => history.push("/services")}
       >
         Ir para serviços
         <NavigateNextIcon />

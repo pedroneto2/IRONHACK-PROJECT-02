@@ -7,10 +7,13 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import Spinner from "../Spinner/Spinner";
 import { Link } from "react-router-dom";
 
-let advertisings = [];
-let intervalID;
-
-const retrieveAdvertisings = (setLoading, setRenderedAds, qtyRendered) => {
+const retrieveAdvertisings = (
+  setAdvertisings,
+  setLoading,
+  setRenderedAds,
+  qtyRendered
+) => {
+  const advertisings = [];
   axios
     .get("https://ironrest.herokuapp.com/venere")
     .then((response) => {
@@ -22,24 +25,34 @@ const retrieveAdvertisings = (setLoading, setRenderedAds, qtyRendered) => {
             user: user.name,
             email: user.email,
             description: user.advertisings.description,
+            link: user.advertisings.link,
           })
       );
       advertisings.sort(() => (Math.random() > 0.5 ? 1 : -1)); // shuffle ads is fairer
       let rotatedAds = advertisings.slice(0, qtyRendered);
+      setAdvertisings([...advertisings]);
       setRenderedAds([...rotatedAds]);
       setLoading(false);
     })
     .catch((error) => console.log(error));
 };
 
-const rotatesAds = (setRenderedAds, qtyRendered) => {
+const rotatesAds = (
+  setRenderedAds,
+  setIntervalID,
+  setAdvertisings,
+  advertisings,
+  qtyRendered
+) => {
   let rotatedAds = advertisings.slice(0, qtyRendered);
   setRenderedAds([...rotatedAds]);
-  intervalID = setInterval(() => {
+  const intervalID = setInterval(() => {
     advertisings.push(advertisings.shift());
+    setAdvertisings([...advertisings]);
     rotatedAds = advertisings.slice(0, qtyRendered);
     setRenderedAds([...rotatedAds]);
   }, 5000);
+  setIntervalID(intervalID);
 };
 
 const retrieveQntyRendered = () => {
@@ -69,6 +82,9 @@ const Advertisings = () => {
   const [loading, setLoading] = useState(true);
   const [renderedAds, setRenderedAds] = useState([]);
 
+  const [advertisings, setAdvertisings] = useState([]);
+  const [intervalID, setIntervalID] = useState(null);
+
   const matchesSM = useMediaQuery("(min-width:720px)");
   const matchesMD = useMediaQuery("(min-width:1080px)");
   const matchesLG = useMediaQuery("(min-width:1440px)");
@@ -82,17 +98,25 @@ const Advertisings = () => {
   }, [matchesSM, matchesMD, matchesLG, matchesXL]);
 
   useEffect(() => {
-    retrieveAdvertisings(setLoading, setRenderedAds, qtyRendered);
-    return () => (advertisings = []);
+    retrieveAdvertisings(
+      setAdvertisings,
+      setLoading,
+      setRenderedAds,
+      qtyRendered
+    );
+    return () => clearInterval(intervalID);
   }, []);
 
   useEffect(() => {
-    //intervalID && clearInterval(intervalID);
-    rotatesAds(setRenderedAds, qtyRendered);
-    return () => {
-      clearInterval(intervalID);
-    };
-  }, [qtyRendered]);
+    clearInterval(intervalID);
+    rotatesAds(
+      setRenderedAds,
+      setIntervalID,
+      setAdvertisings,
+      advertisings,
+      qtyRendered
+    );
+  }, [qtyRendered, advertisings]);
 
   return loading ? (
     <Spinner />
@@ -101,7 +125,7 @@ const Advertisings = () => {
       {renderedAds.map((ad) => (
         <Link
           key={ad.email}
-          to="#"
+          to={ad.link ? ad.link : "#"}
           style={{ textDecoration: "none", color: "black" }}
         >
           <div className="ad-container">
