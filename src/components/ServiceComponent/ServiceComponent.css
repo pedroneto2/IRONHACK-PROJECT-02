@@ -1,0 +1,22 @@
+.service-question-schedule-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.service-component-container .service-question-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  min-width: 300px;
+}
+
+.service-component-container .service-schedule-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+  padding: 10px;
+  min-width: 300px;
+}

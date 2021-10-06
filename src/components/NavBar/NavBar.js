@@ -82,6 +82,7 @@ function NavBar({ linkList = [], children }) {
               sx={{
                 display: { xs: "none", sm: "block" },
                 minWidth: "225px",
+                textAlign: "right",
               }}
             >
               <AuthArea />

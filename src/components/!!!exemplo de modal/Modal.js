@@ -3,7 +3,7 @@ import "./Modal.css";
 import { useContext, useState } from "react";
 import AuthContext from "../../store/contexts/AuthContext";
 
-import { Button, Divider, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 
@@ -28,16 +28,12 @@ const ModalExample = () => {
 
   return (
     <div className="professional-component-container">
-      <Typography color="#1976d2" align="center" variant="h4">
-        CONFIGURAÇÕES
-        <Divider style={{ marginBottom: "25px", borderColor: "#1976d2" }} />
-      </Typography>
       <Button
-        style={{ width: "50%", minWidth: "300px" }}
+        style={{ width: "300px" }}
         variant="contained"
         onClick={() => setOpen({ ...open, services: true })}
       >
-        Manage Services
+        Agendar Serviço!
       </Button>
       <Modal
         open={open.services}
