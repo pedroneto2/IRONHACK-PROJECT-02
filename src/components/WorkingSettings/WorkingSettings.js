@@ -1,7 +1,8 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./WorkingSettings.css";
 
 import Spinner from "../Spinner/Spinner";
+import LoadingPage from "../LoadingPage/LoadingPage";
 
 import Typography from "@mui/material/Typography";
 import { Button, TextField } from "@mui/material";
@@ -20,6 +21,29 @@ import AuthContext from "../../store/contexts/AuthContext";
 
 import axios from "axios";
 import { useHistory } from "react-router";
+
+const retrieveValues = async (userID, setValues, setServices) => {
+  await axios
+    .get("https://ironrest.herokuapp.com/venere/" + userID)
+    .then((response) => {
+      const advertisings = {
+        img: "",
+        link: "",
+        description: "",
+        ...response.data.advertisings,
+      };
+      setValues({
+        maxDays: response.data.maxDays || 0,
+        notWorkingDays: response.data.notWorkingDays || [],
+        weekNotWorkingDays: response.data.weekNotWorkingDays || [],
+        dayNotWorkingHours: response.data.dayNotWorkingHours || [],
+        advertisings: { ...advertisings },
+      });
+      const services = response.data.services || [];
+      setServices(services);
+    })
+    .catch((error) => console.log(error));
+};
 
 const submitValues = (userID, values, setLoading, history) => {
   const confirmation = window.confirm("Você tem certeza?");
@@ -82,18 +106,29 @@ const WorkingSettings = () => {
   const { user } = useContext(AuthContext);
 
   const [loading, setLoading] = useState(false);
+  const [loadingPage, setLoadingPage] = useState(true);
 
   const [values, setValues] = useState({
-    maxDays: user.maxDays,
-    notWorkingDays: [...user.notWorkingDays],
-    weekNotWorkingDays: [...user.weekNotWorkingDays],
-    dayNotWorkingHours: [...user.dayNotWorkingHours],
-    advertisings: { ...user.advertisings },
+    maxDays: "",
+    notWorkingDays: [],
+    weekNotWorkingDays: [],
+    dayNotWorkingHours: [],
+    advertisings: {},
   });
+  const [services, setServices] = useState([]);
 
   const history = useHistory();
 
-  return (
+  useEffect(() => {
+    (async () => {
+      await retrieveValues(user._id, setValues, setServices);
+      setLoadingPage(false);
+    })();
+  }, []);
+
+  return loadingPage ? (
+    <LoadingPage />
+  ) : (
     <div className="working-settings-container">
       <Typography
         variant="h4"
@@ -157,6 +192,9 @@ const WorkingSettings = () => {
           variant="outlined"
           color="primary"
           value={values.advertisings.img}
+          InputLabelProps={{
+            shrink: true,
+          }}
           inputProps={{ maxLength: 100 }}
           onChange={(e) =>
             setValues({
@@ -182,7 +220,7 @@ const WorkingSettings = () => {
             }
           >
             <MenuItem value={""}>Nenhum</MenuItem>
-            {user.services.map((service) => (
+            {services.map((service) => (
               <MenuItem key={service.id} value={"/services/" + service.id}>
                 {service.name}
               </MenuItem>
@@ -198,6 +236,9 @@ const WorkingSettings = () => {
           rows={3}
           inputProps={{ maxLength: 250 }}
           value={values.advertisings.description}
+          InputLabelProps={{
+            shrink: true,
+          }}
           onChange={(e) =>
             setValues({
               ...values,

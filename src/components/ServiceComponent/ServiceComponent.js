@@ -20,6 +20,16 @@ const DOUBT_INITIAL_STATE = {
   doubt: "",
 };
 
+const retrieveUserSchedule = (userID, setUserSchedule) => {
+  axios
+    .get("https://ironrest.herokuapp.com/venere/" + userID)
+    .then((response) => {
+      const schedule = response.data.schedule || [];
+      setUserSchedule([...schedule]);
+    })
+    .catch((error) => console.log(error));
+};
+
 const validateDoubts = (doubtField) => {
   const fieldEmpty = Object.values(doubtField).some((value) => !value);
   const emailRegex =
@@ -129,10 +139,13 @@ const ServiceComponents = ({ serviceID }) => {
   const [doubts, setDoubts] = useState([]);
   const [doubtField, setDoubtField] = useState({ ...DOUBT_INITIAL_STATE });
 
+  const [userSchedule, setUserSchedule] = useState([]);
+
   const { user, authentication } = useContext(AuthContext);
 
   useEffect(() => {
     retrieveService(setService, setLoading, setDoubts, serviceID);
+    user._id && retrieveUserSchedule(user._id, setUserSchedule);
   }, []);
 
   if (loading) {
@@ -236,7 +249,7 @@ const ServiceComponents = ({ serviceID }) => {
               color="primary"
               onClick={() =>
                 sendDoubts(
-                  user._id,
+                  service.professionalID,
                   doubts,
                   doubtField,
                   setDoubtField,
@@ -255,7 +268,7 @@ const ServiceComponents = ({ serviceID }) => {
               service.professionalEmail,
               user.email,
               service.schedule,
-              user.schedule,
+              userSchedule,
               service.duration
             )}
           </div>

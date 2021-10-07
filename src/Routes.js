@@ -8,7 +8,8 @@ import ListServices from "./components/ListServices/ListServices";
 import ServiceComponents from "./components/ServiceComponent/ServiceComponent";
 
 //import TesterComponent from "./components/TesterComponent/TesterComponent";
-//import WorkingSettings from "./components/WorkingSettings/WorkingSettings";
+import WorkingSettings from "./components/WorkingSettings/WorkingSettings";
+import DoubtManager from "./components/DoubtManager/DoubtManager";
 
 import { Switch, Redirect } from "react-router-dom";
 
@@ -17,7 +18,7 @@ import CustomRoute from "./utils/CustomRoute";
 function Routes() {
   return (
     <div className="App">
-      <NavBar linkList={["home", "services", "about"]}>
+      <NavBar linkList={["home", "services", "about", "test", "working"]}>
         <Switch>
           <CustomRoute
             exact
@@ -28,7 +29,8 @@ function Routes() {
               />
             )}
           />
-          {/* <CustomRoute exact path="/test" component={WorkingSettings} /> */}
+          <CustomRoute exact path="/working" component={WorkingSettings} />
+          <CustomRoute exact path="/test" component={DoubtManager} />
           <CustomRoute exact path="/services" component={ListServices} />
           <CustomRoute exact path="/about" component={About} />
           <CustomRoute exact path="/register" component={Register} />

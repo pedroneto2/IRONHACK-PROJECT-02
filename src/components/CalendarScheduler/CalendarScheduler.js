@@ -21,7 +21,7 @@ const retrieveUsers = (
   axios
     .get("https://ironrest.herokuapp.com/venere/" + clientID)
     .then((response) => {
-      const { schedule } = response.data;
+      const { schedule = [] } = response.data;
       setClientUser({ schedule });
     })
     .catch((err) => {
@@ -32,11 +32,11 @@ const retrieveUsers = (
     .get("https://ironrest.herokuapp.com/venere/" + professionalID)
     .then((response) => {
       const {
-        maxDays,
-        notWorkingDays,
-        weekNotWorkingDays,
-        dayNotWorkingHours,
-        schedule,
+        maxDays = 0,
+        notWorkingDays = [],
+        weekNotWorkingDays = [],
+        dayNotWorkingHours = [],
+        schedule = [],
       } = response.data;
       setProfessionalUser({
         maxDays,
@@ -57,9 +57,7 @@ const retrieveDisabledHours = (
   currentDate,
   setDisabledHours,
   clientSchedule,
-  professionalSchedule,
-  disabledDays,
-  setDisabledDays
+  professionalSchedule
 ) => {
   const allDisabledHours = [];
   const allDisabledDateHours = [...clientSchedule, ...professionalSchedule];
@@ -70,8 +68,6 @@ const retrieveDisabledHours = (
         allDisabledHours.push(disabledHour + i);
       }
     }
-    !allDisabledHours.some((hour) => hour <= 24) &&
-      setDisabledDays([...disabledDays, date]);
   });
   setDisabledHours([...allDisabledHours]);
 };
@@ -86,7 +82,6 @@ const CalendarSecheduler = ({
   const [loading, setLoading] = useState(true);
 
   const [maxDate, setMaxDate] = useState();
-  const [disabledDays, setDisabledDays] = useState([]);
   const [disabledHours, setDisabledHours] = useState([]);
 
   const [clientUser, setClientUser] = useState({
@@ -116,9 +111,7 @@ const CalendarSecheduler = ({
       value,
       setDisabledHours,
       clientUser.schedule,
-      professionalUser.schedule,
-      disabledDays,
-      setDisabledDays
+      professionalUser.schedule
     );
   }, [value]);
 
@@ -149,7 +142,6 @@ const CalendarSecheduler = ({
           label="Selecione uma data"
           value={value}
           minDate={new Date()}
-          minTime={afterTwoHour}
           maxDate={maxDate}
           shouldDisableTime={(hour) =>
             disabledHours.some((disabledHour) => disabledHour === hour) ||
@@ -158,10 +150,6 @@ const CalendarSecheduler = ({
             )
           }
           shouldDisableDate={(date) =>
-            disabledDays.some(
-              (disabledDay) =>
-                new Date(disabledDay.date).getDate() === date.getDate()
-            ) ||
             professionalUser.weekNotWorkingDays.some(
               (disabledWeekDay) => disabledWeekDay === date.getDay()
             ) ||
