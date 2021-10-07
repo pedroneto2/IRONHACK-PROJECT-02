@@ -81,6 +81,8 @@ function NavBar({ linkList = [], children }) {
             <Box
               sx={{
                 display: { xs: "none", sm: "block" },
+                minWidth: "225px",
+                textAlign: "right",
               }}
             >
               <AuthArea />
@@ -111,6 +113,7 @@ function NavBar({ linkList = [], children }) {
                 bottom: 0,
                 width: "100%",
                 padding: "1em",
+                minWidth: "220px",
               }}
             >
               <Divider sx={{ marginBottom: "1em", background: "white" }} />

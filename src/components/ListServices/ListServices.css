@@ -1,0 +1,17 @@
+.list-services-container {
+  width: 75%;
+  min-width: 325px;
+  max-width: 600px;
+  margin: auto;
+}
+
+.list-services-container .services-search-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 1em;
+}
+
+.list-services-container .services-container {
+  margin: 1em auto;
+}

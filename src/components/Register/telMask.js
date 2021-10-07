@@ -6,4 +6,5 @@ export const telMask = (value) => {
       .replace(/(\d{4})(\d{1,2})/, "$1-$2")
       .replace(/(-\d{4})\d+?$/, "$1");
   }
+  return "";
 };

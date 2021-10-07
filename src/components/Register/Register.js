@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./Register.css";
 
 import axios from "axios";
@@ -21,16 +21,18 @@ const INITIAL_CREDENTIALS = {
   name: "",
   lastName: "",
   email: "",
-  cpf: null,
+  cpf: "",
   password: "",
   repeatPassword: "",
-  telephone: null,
+  telephone: "",
   address: "",
   profileType: "clients",
 };
 
 const handleChange = (e, credentials, setCredentials) => {
-  const { name, value } = e.target;
+  let { name, value } = e.target;
+  if (name === "cpf") value = cpfMask(value);
+  if (name === "telephone") value = telMask(value);
   setCredentials({ ...credentials, [name]: value });
 };
 
@@ -50,7 +52,6 @@ const handleSubmit = async (
   e,
   credentials,
   history,
-  error,
   setBtnSubmit,
   setMsgSubmit,
   setError,
@@ -62,8 +63,6 @@ const handleSubmit = async (
   const emptyField = Object.values(credentials).some((elem) => !elem);
   const msgErrorSubmit = Object.values(errorMsg).filter((value) => value);
   const checked = await checkData(credentials);
-
-  console.log(checked);
 
   if (emptyField) {
     setBtnSubmit("error");
@@ -264,16 +263,12 @@ const Register = () => {
           onChange={(e) =>
             handleChange(e, credentials, setCredentials, setError, setErrorMsg)
           }
-          onBlur={(e) => {
-            setCredentials({
-              ...credentials,
-              cpf: cpfMask(credentials.cpf),
-            });
-            handleError(e, credentials, error, setError, errorMsg, setErrorMsg);
-          }}
-          onFocus={(e) => {
-            handleFocus(e, error, setError, errorMsg, setErrorMsg);
-          }}
+          onBlur={(e) =>
+            handleError(e, credentials, error, setError, errorMsg, setErrorMsg)
+          }
+          onFocus={(e) =>
+            handleFocus(e, error, setError, errorMsg, setErrorMsg)
+          }
           error={error.cpf}
           helperText={errorMsg.cpf}
         />
@@ -344,13 +339,9 @@ const Register = () => {
           onChange={(e) =>
             handleChange(e, credentials, setCredentials, setError, setErrorMsg)
           }
-          onBlur={(e) => {
-            setCredentials({
-              ...credentials,
-              telephone: telMask(credentials.telephone),
-            });
-            handleError(e, credentials, error, setError, errorMsg, setErrorMsg);
-          }}
+          onBlur={(e) =>
+            handleError(e, credentials, error, setError, errorMsg, setErrorMsg)
+          }
           onFocus={(e) => {
             handleFocus(e, error, setError, errorMsg, setErrorMsg);
           }}
@@ -376,11 +367,7 @@ const Register = () => {
           error={error.address}
           helperText={errorMsg.address}
         />
-        <FormControl
-          error={error.genre}
-          helperText={error.genre}
-          component="fieldset"
-        >
+        <FormControl error={error.genre} component="fieldset">
           <FormLabel component="legend">Genero</FormLabel>
           <RadioGroup
             name="radio-buttons-group"
@@ -420,7 +407,6 @@ const Register = () => {
               e,
               credentials,
               history,
-              error,
               setBtnSubmit,
               setMsgSubmit,
               setError,
