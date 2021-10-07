@@ -12,7 +12,7 @@ const sendSchedule = (
   professionalEmail,
   clientID,
   clientEmail,
-  professionalSchedule,
+  professionalSchedule = [],
   clientSchedule,
   duration,
   setLoading,

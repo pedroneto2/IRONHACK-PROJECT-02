@@ -29,14 +29,15 @@ const addSingleValue = (
     );
   }
   const newValues = values[editedArray];
-  newValues.push(singleValue.getHours());
-  setValues({ ...values, singleValues: [...newValues] });
+  const newSingleValue = hourPicker ? singleValue.getHours() : singleValue;
+  newValues.push(newSingleValue);
+  setValues({ ...values, [editedArray]: newValues });
 };
 
 const removeSingleValue = (index, setValues, values, editedArray) => {
   const newValues = values[editedArray];
   newValues.splice(index, 1);
-  setValues({ ...values, newValues });
+  setValues({ ...values, [editedArray]: newValues });
 };
 
 const DateTimeEditor = ({
