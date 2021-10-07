@@ -7,7 +7,8 @@ import About from "./components/About/About";
 import ListServices from "./components/ListServices/ListServices";
 import ServiceComponents from "./components/ServiceComponent/ServiceComponent";
 
-import TesterComponent from "./components/TesterComponent/TesterComponent";
+//import TesterComponent from "./components/TesterComponent/TesterComponent";
+//import WorkingSettings from "./components/WorkingSettings/WorkingSettings";
 
 import { Switch, Redirect } from "react-router-dom";
 
@@ -27,8 +28,8 @@ function Routes() {
               />
             )}
           />
+          {/* <CustomRoute exact path="/test" component={WorkingSettings} /> */}
           <CustomRoute exact path="/services" component={ListServices} />
-          <CustomRoute exact path="/test" component={TesterComponent} />
           <CustomRoute exact path="/about" component={About} />
           <CustomRoute exact path="/register" component={Register} />
           <CustomRoute exact path="/login" component={Login} />
