@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { Divider, Paper } from "@mui/material";
+import { Button, Divider, Paper } from "@mui/material";
 
 import Spinner from "../Spinner/Spinner";
 
@@ -80,48 +80,51 @@ const ListServices = () => {
 
           return (
             Object.values(service).some((value) => regex.test(value)) && (
-              <Link
+              <Paper
                 key={service.id}
-                to={"/services/" + service.id}
-                style={{ textDecoration: "none" }}
+                elevation={4}
+                style={{
+                  padding: "1em",
+                  display: "flex",
+                  flexDirection: "column",
+                  marginBottom: "3em",
+                }}
               >
-                <Paper
-                  elevation={4}
-                  style={{
-                    padding: "1em",
-                    display: "flex",
-                    flexDirection: "column",
-                    marginBottom: "3em",
-                  }}
-                >
+                <div className="service-name-button-container">
                   <Typography color="primary" variant="h5">
                     {service.name}
                   </Typography>
-                  <Divider sx={{ margin: "0.5em 0" }} />
-                  <Typography color="black" variant="p">
-                    <strong>Profissional:</strong> {service.user}
-                  </Typography>
-                  <Typography color="black" variant="p">
-                    <strong>Email:</strong> {service.email}
-                  </Typography>
-                  <Typography color="black" variant="p">
-                    <strong>Categoria:</strong> {service.category}
-                  </Typography>
-                  <Typography color="black" variant="p">
-                    <strong>Duração:</strong>{" "}
-                    {`${service.duration} hora${
-                      service.duration > 1 ? "s" : ""
-                    }`}
-                  </Typography>
-                  <Typography color="black" variant="p">
-                    <strong>Preço:</strong>{" "}
-                    {service.price.toLocaleString("pt-br", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
-                  </Typography>
-                </Paper>
-              </Link>
+                  <Link
+                    to={"/services/" + service.id}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Button variant="outlined" color="primary">
+                      Detalhes
+                    </Button>
+                  </Link>
+                </div>
+                <Divider sx={{ margin: "0.5em 0" }} />
+                <Typography color="black" variant="p">
+                  <strong>Profissional:</strong> {service.user}
+                </Typography>
+                <Typography color="black" variant="p">
+                  <strong>Email:</strong> {service.email}
+                </Typography>
+                <Typography color="black" variant="p">
+                  <strong>Categoria:</strong> {service.category}
+                </Typography>
+                <Typography color="black" variant="p">
+                  <strong>Duração:</strong>{" "}
+                  {`${service.duration} hora${service.duration > 1 ? "s" : ""}`}
+                </Typography>
+                <Typography color="black" variant="p">
+                  <strong>Preço:</strong>{" "}
+                  {service.price.toLocaleString("pt-br", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </Typography>
+              </Paper>
             )
           );
         })}

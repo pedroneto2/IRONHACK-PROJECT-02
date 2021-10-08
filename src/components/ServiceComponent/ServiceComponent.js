@@ -108,6 +108,9 @@ const renderScheduler = (
   clientID,
   professionalEmail,
   clientEmail,
+  clientName,
+  servicePrice,
+  serviceName,
   professionalSchedule,
   clientSchedule,
   duration
@@ -124,6 +127,9 @@ const renderScheduler = (
       clientID={clientID}
       professionalEmail={professionalEmail}
       clientEmail={clientEmail}
+      clientName={clientName}
+      servicePrice={servicePrice}
+      serviceName={serviceName}
       professionalSchedule={professionalSchedule}
       clientSchedule={clientSchedule}
       duration={duration}
@@ -267,6 +273,9 @@ const ServiceComponents = ({ serviceID }) => {
               user._id,
               service.professionalEmail,
               user.email,
+              user.name,
+              service.price,
+              service.name,
               service.schedule,
               userSchedule,
               service.duration

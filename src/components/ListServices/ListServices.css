@@ -15,3 +15,8 @@
 .list-services-container .services-container {
   margin: 1em auto;
 }
+
+.service-name-button-container {
+  display: flex;
+  justify-content: space-between;
+}
