@@ -13,6 +13,7 @@ import { Paper, Divider, TextField, Button } from "@mui/material";
 import Typography from "@mui/material/Typography";
 
 import ScheduleService from "../ScheduleService/ScheduleService";
+import { Link } from "react-router-dom";
 
 const DOUBT_INITIAL_STATE = {
   name: "",
@@ -175,9 +176,16 @@ const ServiceComponents = ({ serviceID }) => {
           padding: "1em",
         }}
       >
-        <Typography color="primary" variant="h5">
-          {service.name}
-        </Typography>
+        <div className="service-component-button-container">
+          <Typography color="primary" variant="h5">
+            {service.name}
+          </Typography>
+          <Link to={"/services/"} style={{ textDecoration: "none" }}>
+            <Button variant="outlined" color="primary">
+              Voltar
+            </Button>
+          </Link>
+        </div>
         <Divider sx={{ margin: "0.5em 0" }} />
         <Typography color="black" variant="p">
           <strong>Profissional:</strong> {service.professional}
@@ -202,6 +210,21 @@ const ServiceComponents = ({ serviceID }) => {
         <Typography color="black" variant="p" align="justify">
           <strong>Descrição:</strong> {service.description}
         </Typography>
+        <div className="service-schedule-container">
+          {renderScheduler(
+            authentication,
+            service.professionalID,
+            user._id,
+            service.professionalEmail,
+            user.email,
+            user.name,
+            service.price,
+            service.name,
+            service.schedule,
+            userSchedule,
+            service.duration
+          )}
+        </div>
         <div className="service-question-schedule-container">
           <div className="service-question-container">
             <Typography
@@ -265,21 +288,6 @@ const ServiceComponents = ({ serviceID }) => {
             >
               {loadingDoubt ? <Spinner size="2em" /> : "Enviar!"}
             </Button>
-          </div>
-          <div className="service-schedule-container">
-            {renderScheduler(
-              authentication,
-              service.professionalID,
-              user._id,
-              service.professionalEmail,
-              user.email,
-              user.name,
-              service.price,
-              service.name,
-              service.schedule,
-              userSchedule,
-              service.duration
-            )}
           </div>
         </div>
       </Paper>
