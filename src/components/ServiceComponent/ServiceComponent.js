@@ -182,7 +182,7 @@ const ServiceComponents = ({ serviceID }) => {
           </Typography>
           <Link to={"/services/"} style={{ textDecoration: "none" }}>
             <Button variant="outlined" color="primary">
-              Voltar
+              Ir para Serviços
             </Button>
           </Link>
         </div>
