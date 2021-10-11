@@ -51,9 +51,9 @@ function NavBar({ linkList = [], children }) {
 
   return (
     <div className="nav-bar-container">
-      <Box>
+      <Box sx={{ width: "100%" }}>
         <CssBaseline />
-        <AppBar position="fixed">
+        <AppBar position="fixed" sx={{ padding: "0" }}>
           <Toolbar sx={{ justifyContent: "space-between" }}>
             <div className="nav-bar-logo-links-container">
               <Link to={"/"}>

@@ -180,9 +180,9 @@ const ServiceComponents = ({ serviceID }) => {
           <Typography color="primary" variant="h5">
             {service.name}
           </Typography>
-          <Link to={"/services/"} style={{ textDecoration: "none" }}>
+          <Link to={"/procedimentos/"} style={{ textDecoration: "none" }}>
             <Button variant="outlined" color="primary">
-              Voltar
+              procedimentos
             </Button>
           </Link>
         </div>

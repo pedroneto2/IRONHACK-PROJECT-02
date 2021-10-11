@@ -221,7 +221,7 @@ const WorkingSettings = () => {
           >
             <MenuItem value={""}>Nenhum</MenuItem>
             {services.map((service) => (
-              <MenuItem key={service.id} value={"/services/" + service.id}>
+              <MenuItem key={service.id} value={"/procedimentos/" + service.id}>
                 {service.name}
               </MenuItem>
             ))}
