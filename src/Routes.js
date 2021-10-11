@@ -45,10 +45,21 @@ function Routes() {
           <CustomRoute exact path="/about" component={About} />
           <CustomRoute exact path="/register" component={Register} />
           <CustomRoute exact path="/login" component={Login} />
+
+          <CustomRoute
+            exact
+            path="/professional-home/:tab"
+            render={(routeProps) => (
+              <ProfessionalHome
+                defaultTab={routeProps.match.params.tab}
+                routeProps={routeProps}
+              />
+            )}
+          />
           <CustomRoute
             exact
             path="/professional-home"
-            component={ProfessionalHome}
+            render={(routeProps) => <ProfessionalHome />}
           />
           <CustomRoute exact path="/home" component={Home} />
           <CustomRoute exact path="/not-found" component={PageNotFound} />

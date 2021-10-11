@@ -1,5 +1,12 @@
 .form-update{
 margin-top: 25px ;
-min-width: 300px;
-max-width: 50%;
+
 }
+
+.form-update .div-button{
+    display: flex;
+    /* align-items: flex-end; */
+    justify-content: flex-end;
+    width: 100%;
+}
+

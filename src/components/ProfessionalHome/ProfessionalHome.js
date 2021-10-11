@@ -4,7 +4,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import ProfessionalDetails from "./ProfessionalDetails";
-import Calendar from "./Calender";
+import Calendar from "./Calender/Calender";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -35,8 +35,9 @@ function a11yProps(index) {
   };
 }
 
-export default function VerticalTabs() {
-  const [value, setValue] = React.useState(0);
+export default function VerticalTabs(props) {
+  console.log(props.defaultTab);
+  const [value, setValue] = React.useState(Number(props.defaultTab));
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -48,7 +49,6 @@ export default function VerticalTabs() {
         display: "flex",
         flexDirection: "column",
         alignItem: "center",
-        margin: "auto",
       }}
     >
       <Box
@@ -67,12 +67,15 @@ export default function VerticalTabs() {
           sx={{
             borderRight: 1,
             borderColor: "divider",
+
+            width: "fit-content",
+            margin: "auto",
           }}
         >
           <Tab label="Detalhes" {...a11yProps(0)} />
           <Tab label="Agenda" {...a11yProps(1)} />
           <Tab label="Serviços" {...a11yProps(2)} />
-          <Tab label="Dúvidas" {...a11yProps(2)} />
+          <Tab label="Dúvidas" {...a11yProps(3)} />
         </Tabs>
         <TabPanel value={value} index={0}>
           <ProfessionalDetails />

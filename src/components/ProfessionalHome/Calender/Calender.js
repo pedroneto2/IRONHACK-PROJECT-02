@@ -19,59 +19,53 @@ import Tooltip from "@mui/material/Tooltip";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import deleteSchedule from "./DeleteSchedule";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
-
-import AuthContext from "../../store/contexts/AuthContext";
+import { useHistory } from "react-router";
+import AuthContext from "../../../store/contexts/AuthContext";
 import axios from "axios";
+import FormCalender from "./FormCalender";
 
-function createData(date, name, service, value, status) {
-  return {
-    date,
-    name,
-    service,
-    value,
-    status,
-  };
-}
+const createRows = (
+  userId,
+  schedulesRows,
+  setSchedulesRows,
+  userData,
+  setUserData
+) => {
+  const editData = [];
 
-const scheduleRowss = [];
-const createRows = (schedule) => {
-  schedule.map((scheduling) => {
-    axios
-      .get(`https://ironrest.herokuapp.com/venere/${scheduling.clientID}`)
-      .then((response) => {
-        console.log("executei ---> ", scheduling.clientID);
-        scheduleRowss.push(
-          createData(
-            scheduling.date,
-            response.data.name,
-            "serviço aqui",
-            "valor aqui",
-            "pago/ nao pago/ concluido / nao concluido"
-          )
-        );
-      })
-      .catch((err) => console.error(err));
-  });
-  return scheduleRowss;
+  axios
+    .get(`https://ironrest.herokuapp.com/venere/${userId}`)
+    .then((response) => {
+      setUserData({ ...response.data });
+
+      response.data.schedule.forEach((ele) => {
+        editData.push({
+          date: ele.date,
+          clientName: ele.clientName,
+          serviceName: ele.serviceName,
+          servicePrice: ele.servicePrice,
+          status: ele.status,
+        });
+      });
+
+      setSchedulesRows(editData);
+    })
+    .catch((err) => console.error(err));
 };
 
-const rows = [
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Donut", 452, 25.0, 51, 4.9),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData("Gingerbread", 356, 16.0, 49, 3.9),
-  createData("Honeycomb", 408, 3.2, 87, 6.5),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Jelly Bean", 375, 0.0, 94, 0.0),
-  createData("KitKat", 518, 26.0, 65, 7.0),
-  createData("Lollipop", 392, 0.2, 98, 0.0),
-  createData("Marshmallow", 318, 0, 81, 2.0),
-  createData("Nougat", 360, 19.0, 9, 37.0),
-  createData("Oreo", 437, 18.0, 63, 4.0),
-];
+function formateDate(date) {
+  const newDate = new Date(date);
+  const year = newDate.getFullYear();
+  const month = newDate.getMonth();
+  const days = newDate.getDate();
+  const hour = newDate.getHours();
+
+  return `${days}/${month}/${year} - ${hour}:00 h`;
+}
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -107,7 +101,7 @@ const headCells = [
   {
     id: "date",
     numeric: false,
-    disablePadding: false,
+    disablePadding: true,
     label: "Data",
   },
   {
@@ -145,6 +139,7 @@ function EnhancedTableHead(props) {
     rowCount,
     onRequestSort,
   } = props;
+
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -199,7 +194,19 @@ EnhancedTableHead.propTypes = {
 };
 
 const EnhancedTableToolbar = (props) => {
-  const { numSelected } = props;
+  const {
+    user,
+    numSelected,
+    selected,
+    scheduleRows,
+    setSchedulesRows,
+    userData,
+    setUserData,
+    setSelected,
+    editSchedule,
+    setEditSchedule,
+    history,
+  } = props;
 
   return (
     <Toolbar
@@ -213,6 +220,7 @@ const EnhancedTableToolbar = (props) => {
               theme.palette.action.activatedOpacity
             ),
         }),
+        selected,
       }}
     >
       {numSelected > 0 ? (
@@ -236,11 +244,35 @@ const EnhancedTableToolbar = (props) => {
       )}
 
       {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
+        <div style={{ display: "flex" }}>
+          <Tooltip title="Edit">
+            <IconButton
+              onClick={() => {
+                setEditSchedule(!editSchedule);
+              }}
+            >
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton
+              onClick={() => {
+                deleteSchedule(
+                  user._id,
+                  selected,
+                  scheduleRows,
+                  setSchedulesRows,
+                  userData,
+                  setUserData,
+                  setSelected,
+                  history
+                );
+              }}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        </div>
       ) : (
         <Tooltip title="Filter list">
           <IconButton>
@@ -258,17 +290,21 @@ EnhancedTableToolbar.propTypes = {
 
 export default function EnhancedTable() {
   const { user } = React.useContext(AuthContext);
-  //   const scheduleRows = rows;
-  console.log("antes ", createRows(user.schedule));
-  const scheduleRows = createRows(user.schedule);
+  const history = useHistory();
 
-  console.log("depois ", createRows(user.schedule));
+  const [scheduleRows, setSchedulesRows] = React.useState([]);
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("name");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [editSchedule, setEditSchedule] = React.useState(false);
+  const [userData, setUserData] = React.useState([]);
+
+  React.useEffect(() => {
+    createRows(user._id, scheduleRows, setSchedulesRows, userData, setUserData);
+  }, []);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -278,7 +314,7 @@ export default function EnhancedTable() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = scheduleRows.map((n) => n.name);
+      const newSelecteds = scheduleRows.map((n) => n.date);
       setSelected(newSelecteds);
       return;
     }
@@ -325,9 +361,29 @@ export default function EnhancedTable() {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - scheduleRows.length) : 0;
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box>
+      <FormCalender
+        editSchedule={editSchedule}
+        userData={userData}
+        selected={selected}
+        setUserData={setUserData}
+        history={history}
+      />
+
       <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          selected={selected}
+          scheduleRows={scheduleRows}
+          setSchedulesRows={setSchedulesRows}
+          user={user}
+          userData={userData}
+          setUserData={setUserData}
+          setSelected={setSelected}
+          editSchedule={editSchedule}
+          setEditSchedule={setEditSchedule}
+          history={history}
+        />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -348,17 +404,17 @@ export default function EnhancedTable() {
               {stableSort(scheduleRows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((scheduleRows, index) => {
-                  const isItemSelected = isSelected(scheduleRows.name);
+                  const isItemSelected = isSelected(scheduleRows.date);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, scheduleRows.name)}
+                      onClick={(event) => handleClick(event, scheduleRows.date)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={scheduleRows.name}
+                      key={scheduleRows.clientName + String(index)}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
@@ -376,13 +432,19 @@ export default function EnhancedTable() {
                         scope="row"
                         padding="none"
                       >
-                        {scheduleRows.date}
+                        {formateDate(scheduleRows.date)}
                       </TableCell>
-                      <TableCell align="right">{scheduleRows.name}</TableCell>
                       <TableCell align="right">
-                        {scheduleRows.service}
+                        {scheduleRows.clientName}
                       </TableCell>
-                      <TableCell align="right">{scheduleRows.value}</TableCell>
+                      <TableCell align="right">
+                        {scheduleRows.serviceName}
+                      </TableCell>
+                      <TableCell align="right">
+                        {scheduleRows.servicePrice.toLocaleString("pt-br", {
+                          minimumFractionDigits: 2,
+                        })}
+                      </TableCell>
                       <TableCell align="right">{scheduleRows.status}</TableCell>
                     </TableRow>
                   );
