@@ -11,6 +11,7 @@ import MobileDatePicker from "@mui/lab/MobileDatePicker";
 import TimePicker from "@mui/lab/TimePicker";
 
 const handleChange = (e, updateSchedule, setUpdateSchedule) => {
+  console.log(e);
   const { name, value } = e.target;
   setUpdateSchedule({ ...updateSchedule, [name]: value });
 };
@@ -77,6 +78,7 @@ const updateData = (
       Number(dayToData),
       Number(hourToData)
     );
+    mergeData["date"] = dateToData.toJSON();
   }
 
   updateSchedule.name && (mergeData["clientName"] = updateSchedule.name);
@@ -91,9 +93,6 @@ const updateData = (
 
   const userId = userData._id;
   delete newUserData["_id"];
-  console.log("checando o ID.   --->", userData._id);
-
-  console.log("checando o put.   --->", newUserData);
   const editData = [];
   axios
     .put(`https://ironrest.herokuapp.com/venere/${userId}`, newUserData)
@@ -102,10 +101,8 @@ const updateData = (
         .get(`https://ironrest.herokuapp.com/venere/${userId}`)
         .then((response) => {
           setEditSchedule(!editSchedule);
-          console.log("response....", response.data);
           selected.shift();
           setSelected(selected);
-
           response.data.schedule.forEach((ele) => {
             editData.push({
               date: ele.date,
@@ -115,7 +112,6 @@ const updateData = (
               status: ele.status,
             });
           });
-
           setSchedulesRows(editData);
         })
         .catch((err) => console.error(err));
@@ -168,22 +164,20 @@ function FormCalender(props) {
     userData,
     selected,
     setSelected,
-    history,
     setEditSchedule,
     setSchedulesRows,
   } = props;
 
-  console.log("Selected -->", selected);
   const renderUpdate = findSelected(userData, selected[0]);
-  const [updateSchedule, setUpdateSchedule] = useState({});
+  const [updateSchedule, setUpdateSchedule] = useState({
+    status: "",
+  });
   const adjusted = AdjusteDate(selected[0]);
   const adjustedTime = selected[0];
   const [dateValeu, setDateValeu] = useState(adjusted);
   const [timeValeu, setTimeValue] = useState(adjustedTime);
 
-  selected.length === 0 && setEditSchedule(false);
-
-  console.log(adjustedTime);
+  console.log(updateSchedule);
   if (editSchedule && renderUpdate) {
     return (
       <div>
@@ -259,6 +253,7 @@ function FormCalender(props) {
             fullWidth
             id="outlined-required"
             label="Situação"
+            value={updateSchedule.status}
             name="status"
             select
             type="text"
@@ -286,8 +281,6 @@ function FormCalender(props) {
                   userData,
                   selected,
                   setSelected,
-
-                  history,
                   setSchedulesRows
                 );
               }}

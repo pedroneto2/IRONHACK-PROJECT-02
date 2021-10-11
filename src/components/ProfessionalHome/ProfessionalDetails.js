@@ -42,9 +42,13 @@ function ProfessionalDetails() {
         <Container maxWidth="sl" sx={{ margin: "auto" }}>
           <Box>
             {data.photo ? (
-              <img src={`${data.photo}`} style={{ maxWidth: "300px" }} />
+              <img
+                alt="professional"
+                src={`${data.photo}`}
+                style={{ maxWidth: "300px" }}
+              />
             ) : (
-              <img src={defaultImage} />
+              <img alt="default" src={defaultImage} />
             )}
           </Box>
           <p>

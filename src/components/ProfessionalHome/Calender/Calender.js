@@ -48,7 +48,7 @@ const createRows = (
           clientName: ele.clientName,
           serviceName: ele.serviceName,
           servicePrice: ele.servicePrice,
-          status: ele.status,
+          status: ele.status ? ele.status : "Aguardando Pagamento",
         });
       });
 
@@ -205,7 +205,6 @@ const EnhancedTableToolbar = (props) => {
     setSelected,
     editSchedule,
     setEditSchedule,
-    history,
   } = props;
 
   return (
@@ -264,8 +263,7 @@ const EnhancedTableToolbar = (props) => {
                   setSchedulesRows,
                   userData,
                   setUserData,
-                  setSelected,
-                  history
+                  setSelected
                 );
               }}
             >
@@ -369,7 +367,6 @@ export default function EnhancedTable() {
         selected={selected}
         setSelected={setSelected}
         setUserData={setUserData}
-        history={history}
         setSchedulesRows={setSchedulesRows}
       />
 
