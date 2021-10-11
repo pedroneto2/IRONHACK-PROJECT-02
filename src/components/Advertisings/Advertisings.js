@@ -55,20 +55,19 @@ const rotatesAds = (
   setIntervalID(intervalID);
 };
 
-const retrieveQntyRendered = () => {
+const retrieveQntyRendered = (matchesSM, matchesMD, matchesLG, matchesXL) => {
   let qty;
-  const width = window.innerWidth;
   switch (true) {
-    case width > 1800:
+    case matchesXL:
       qty = 5;
       break;
-    case width > 1440:
+    case matchesLG:
       qty = 4;
       break;
-    case width > 1080:
+    case matchesMD:
       qty = 3;
       break;
-    case width > 720:
+    case matchesSM:
       qty = 2;
       break;
     default:
@@ -93,7 +92,12 @@ const Advertisings = () => {
   const [qtyRendered, setQtyRendered] = useState(retrieveQntyRendered());
 
   useEffect(() => {
-    const qty = retrieveQntyRendered();
+    const qty = retrieveQntyRendered(
+      matchesSM,
+      matchesMD,
+      matchesLG,
+      matchesXL
+    );
     setQtyRendered(qty);
   }, [matchesSM, matchesMD, matchesLG, matchesXL]);
 
@@ -111,7 +115,7 @@ const Advertisings = () => {
   }, []);
 
   useEffect(() => {
-    clearInterval(intervalID);
+    intervalID && clearInterval(intervalID);
     rotatesAds(
       setRenderedAds,
       setIntervalID,

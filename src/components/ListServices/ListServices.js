@@ -62,7 +62,7 @@ const ListServices = () => {
   ) : (
     <div className="list-services-container">
       <Typography color="primary" variant="h4" align="center">
-        Serviços
+        PROCEDIMENTOS
       </Typography>
       <div className="services-search-container">
         <TextField
@@ -95,7 +95,7 @@ const ListServices = () => {
                     {service.name}
                   </Typography>
                   <Link
-                    to={"/services/" + service.id}
+                    to={"/procedimentos/" + service.id}
                     style={{ textDecoration: "none" }}
                   >
                     <Button variant="outlined" color="primary">
