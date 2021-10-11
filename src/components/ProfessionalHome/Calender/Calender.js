@@ -364,10 +364,13 @@ export default function EnhancedTable() {
     <Box>
       <FormCalender
         editSchedule={editSchedule}
+        setEditSchedule={setEditSchedule}
         userData={userData}
         selected={selected}
+        setSelected={setSelected}
         setUserData={setUserData}
         history={history}
+        setSchedulesRows={setSchedulesRows}
       />
 
       <Paper sx={{ width: "100%", mb: 2 }}>

@@ -59,7 +59,7 @@ function Routes() {
           <CustomRoute
             exact
             path="/professional-home"
-            render={(routeProps) => <ProfessionalHome />}
+            render={(routeProps) => <ProfessionalHome defaultTab={0} />}
           />
           <CustomRoute exact path="/home" component={Home} />
           <CustomRoute exact path="/not-found" component={PageNotFound} />

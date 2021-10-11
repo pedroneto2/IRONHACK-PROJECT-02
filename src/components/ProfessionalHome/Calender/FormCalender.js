@@ -3,20 +3,46 @@ import TextField from "@mui/material/TextField";
 import Container from "@mui/material/Container";
 import { Button } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
-import { display } from "@mui/system";
 import axios from "axios";
+import Stack from "@mui/material/Stack";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import MobileDatePicker from "@mui/lab/MobileDatePicker";
+import TimePicker from "@mui/lab/TimePicker";
 
 const handleChange = (e, updateSchedule, setUpdateSchedule) => {
   const { name, value } = e.target;
   setUpdateSchedule({ ...updateSchedule, [name]: value });
 };
 
+const handleChangeDate = (
+  e,
+  updateSchedule,
+  setUpdateSchedule,
+  setDateValeu
+) => {
+  setDateValeu(formateDatePicker(e));
+  setUpdateSchedule({ ...updateSchedule, date: formateDatePicker(e) });
+};
+
+const handleChangeHour = (
+  e,
+  updateSchedule,
+  setUpdateSchedule,
+  setTimeValeu
+) => {
+  setTimeValeu(e);
+  setUpdateSchedule({ ...updateSchedule, hour: e.getHours() });
+};
+
 const updateData = (
   updateSchedule,
+  editSchedule,
+  setEditSchedule,
   userData,
   selected,
-  setUserData,
-  history
+  setSelected,
+  setSchedulesRows
 ) => {
   const dataFiltred = userData.schedule.filter((ele) => {
     return String(ele.date) !== String(selected[0]);
@@ -27,23 +53,32 @@ const updateData = (
   });
 
   if (updateSchedule.date) {
-    const yearToData = updateSchedule.date.slice(0, 4);
-    const mounthToData = updateSchedule.date.slice(5, 7) - 1;
-    const dayToData = updateSchedule.date.slice(8, 10);
+    const yearToData = updateSchedule.date.split("/")[2];
+    const dayToData = updateSchedule.date.split("/")[1];
+    const mounthToData = updateSchedule.date.split("/")[0] - 1;
+    const hourToData = updateSchedule.hour;
 
-    const hourToData = updateSchedule.hour.slice(0, 2);
     const dateToData = new Date(
-      yearToData,
-      mounthToData,
-      dayToData,
-      hourToData
+      Number(yearToData),
+      Number(mounthToData),
+      Number(dayToData),
+      Number(hourToData) ? Number(hourToData) : new Date(selected).getHours()
     );
+
     mergeData["date"] = dateToData.toJSON();
+  } else if (updateSchedule.hour) {
+    const yearToData = new Date(selected).getFullYear();
+    const dayToData = new Date(selected).getDate();
+    const mounthToData = new Date(selected).getMonth();
+    const hourToData = updateSchedule.hour;
+    const dateToData = new Date(
+      Number(yearToData),
+      Number(mounthToData),
+      Number(dayToData),
+      Number(hourToData)
+    );
   }
 
-  // console.log("teste slice", dateToData);
-  // console.log("data antes de formatada", updateSchedule.date);
-  // console.log("data formatada", dateToData);
   updateSchedule.name && (mergeData["clientName"] = updateSchedule.name);
   updateSchedule.service && (mergeData["serviceName"] = updateSchedule.service);
   updateSchedule.value && (mergeData["servicePrice"] = updateSchedule.value);
@@ -53,26 +88,35 @@ const updateData = (
     ...userData,
     schedule: [...dataFiltred, mergeData],
   };
+
   const userId = userData._id;
   delete newUserData["_id"];
-  console.log("newuser   ->>>>>>>", newUserData);
+  console.log("checando o ID.   --->", userData._id);
 
-  console.log("filtrando objeto para atualizar", dataFiltred);
-  console.log("Objeto com os dados atualizados", mergeData);
-  console.log("oque eu estou atualizando", {
-    ...userData,
-    schedule: [...dataFiltred, mergeData],
-  });
-
+  console.log("checando o put.   --->", newUserData);
+  const editData = [];
   axios
     .put(`https://ironrest.herokuapp.com/venere/${userId}`, newUserData)
     .then(() => {
       axios
         .get(`https://ironrest.herokuapp.com/venere/${userId}`)
         .then((response) => {
-          console.log("response data ---> ", response.data);
-          setUserData(response.data);
-          history.go(0);
+          setEditSchedule(!editSchedule);
+          console.log("response....", response.data);
+          selected.shift();
+          setSelected(selected);
+
+          response.data.schedule.forEach((ele) => {
+            editData.push({
+              date: ele.date,
+              clientName: ele.clientName,
+              serviceName: ele.serviceName,
+              servicePrice: ele.servicePrice,
+              status: ele.status,
+            });
+          });
+
+          setSchedulesRows(editData);
         })
         .catch((err) => console.error(err));
     })
@@ -86,27 +130,30 @@ const typeStatus = [
   { value: "Confirmado o agendamento", label: "Confirmado o agendamento" },
 ];
 
-function formateDate(date) {
+function formateDatePicker(date) {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1; /// valor real do mes
+  const days = date.getDate();
+
+  if (month < 9 && days < 10) {
+    return `0${month}/0${days}/${year}`;
+  } else if (days >= 10 && month < 9) {
+    return `0${month}/${days}/${year}`;
+  } else if (days < 10 && month >= 9) {
+    return `${month}/0${days}/${year}`;
+  } else {
+    return `${month}/${days}/${year}`;
+  }
+}
+
+function AdjusteDate(date) {
+  // usando mes real para funçoes
   const newDate = new Date(date);
   const year = newDate.getFullYear();
   const month = newDate.getMonth();
   const days = newDate.getDate();
 
-  if (month < 10 && days < 10) {
-    return `${year}-0${month}-0${days}`;
-  } else if (days >= 10 && month < 10) {
-    return `${year}-0${month}-${days}`;
-  } else if (days < 10 && month >= 10) {
-    return `${year}-${month}-0${days}`;
-  } else {
-    return `${year}-${month}-${days}`;
-  }
-}
-
-function formateHour(date) {
-  const newDate = new Date(date);
-  const hour = newDate.getHours();
-  return `${hour}:00`;
+  return new Date(year, month - 1, days).toJSON();
 }
 
 const findSelected = (userData, selected) => {
@@ -116,19 +163,28 @@ const findSelected = (userData, selected) => {
 };
 
 function FormCalender(props) {
-  const { editSchedule, userData, selected, setUserData, history } = props;
+  const {
+    editSchedule,
+    userData,
+    selected,
+    setSelected,
+    history,
+    setEditSchedule,
+    setSchedulesRows,
+  } = props;
+
+  console.log("Selected -->", selected);
   const renderUpdate = findSelected(userData, selected[0]);
-  const [updateSchedule, setUpdateSchedule] = useState({
-    // date: `${selected}`,
-    // hour: `${formateHour(selected)}`,
-    // clientName: `${renderUpdate.clientName}`,
-    // serviceName: `${renderUpdate.serviceName}`,
-    // serciePrice: `${renderUpdate.servicePrice}`,
-  });
-  console.log(userData);
+  const [updateSchedule, setUpdateSchedule] = useState({});
+  const adjusted = AdjusteDate(selected[0]);
+  const adjustedTime = selected[0];
+  const [dateValeu, setDateValeu] = useState(adjusted);
+  const [timeValeu, setTimeValue] = useState(adjustedTime);
+
+  selected.length === 0 && setEditSchedule(false);
+
+  console.log(adjustedTime);
   if (editSchedule && renderUpdate) {
-    const dateToDefault = formateDate(selected);
-    const hourToDefault = formateHour(selected);
     return (
       <div>
         <Container
@@ -138,24 +194,39 @@ function FormCalender(props) {
             "& .MuiTextField-root": { margin: "5px" },
           }}
         >
-          <TextField
-            fullWidth
-            id="outlined-required"
-            label="Date"
-            name="date"
-            type="date"
-            defaultValue={dateToDefault}
-            onChange={(e) => handleChange(e, updateSchedule, setUpdateSchedule)}
-          />
-          <TextField
-            fullWidth
-            id="outlined-required"
-            label="Horário"
-            name="hour"
-            type="time"
-            defaultValue={hourToDefault}
-            onChange={(e) => handleChange(e, updateSchedule, setUpdateSchedule)}
-          />
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <Stack spacing={3}>
+              <MobileDatePicker
+                label="Data"
+                inputFormat="dd/MM/yyyy"
+                value={dateValeu ? dateValeu : adjusted}
+                onChange={(e) =>
+                  handleChangeDate(
+                    e,
+                    updateSchedule,
+                    setUpdateSchedule,
+                    dateValeu,
+                    setDateValeu
+                  )
+                }
+                renderInput={(params) => <TextField {...params} />}
+              />
+              <TimePicker
+                label="Time"
+                value={timeValeu ? timeValeu : adjustedTime}
+                onChange={(e) =>
+                  handleChangeHour(
+                    e,
+                    updateSchedule,
+                    setUpdateSchedule,
+                    timeValeu,
+                    setTimeValue
+                  )
+                }
+                renderInput={(params) => <TextField {...params} />}
+              />
+            </Stack>
+          </LocalizationProvider>
 
           <TextField
             fullWidth
@@ -210,10 +281,14 @@ function FormCalender(props) {
               onClick={() => {
                 updateData(
                   updateSchedule,
+                  editSchedule,
+                  setEditSchedule,
                   userData,
                   selected,
-                  setUserData,
-                  history
+                  setSelected,
+
+                  history,
+                  setSchedulesRows
                 );
               }}
             >

@@ -1,7 +1,7 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
 import { Button } from "@mui/material";
 import "./ProfessionalDetails.css";
@@ -19,11 +19,7 @@ function ProfessionalDetails() {
   const history = useHistory();
 
   function setDataToUpdate(dataToUpdate) {
-    console.log("dados no comp professional", dataToUpdate);
     const objectToUpdate = { ...data, ...dataToUpdate };
-
-    console.log("dados no comp professional", data);
-
     delete objectToUpdate["_id"];
     setData({ ...data, ...dataToUpdate });
     setShowProfile(false);

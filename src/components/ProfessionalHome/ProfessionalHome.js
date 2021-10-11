@@ -36,7 +36,6 @@ function a11yProps(index) {
 }
 
 export default function VerticalTabs(props) {
-  console.log(props.defaultTab);
   const [value, setValue] = React.useState(Number(props.defaultTab));
 
   const handleChange = (event, newValue) => {
