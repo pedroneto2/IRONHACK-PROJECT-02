@@ -1,6 +1,7 @@
 import NavBar from "./components/NavBar/NavBar";
 import PageNotFound from "./components/PageNotFound/PageNotFound";
 import Home from "./components/Home/Home";
+import ProfessionalHome from "./components/ProfessionalHome/ProfessionalHome";
 import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
 import About from "./components/About/About";
@@ -35,6 +36,22 @@ function Routes() {
           <CustomRoute exact path="/about" component={About} />
           <CustomRoute exact path="/register" component={Register} />
           <CustomRoute exact path="/login" component={Login} />
+
+          <CustomRoute
+            exact
+            path="/professional-home/:tab"
+            render={(routeProps) => (
+              <ProfessionalHome
+                defaultTab={routeProps.match.params.tab}
+                routeProps={routeProps}
+              />
+            )}
+          />
+          <CustomRoute
+            exact
+            path="/professional-home"
+            render={(routeProps) => <ProfessionalHome defaultTab={0} />}
+          />
           <CustomRoute exact path="/home" component={Home} />
           <CustomRoute exact path="/not-found" component={PageNotFound} />
           <CustomRoute exact path="/" component={Home} />
