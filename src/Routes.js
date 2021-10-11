@@ -18,11 +18,11 @@ import CustomRoute from "./utils/CustomRoute";
 function Routes() {
   return (
     <div className="App">
-      <NavBar linkList={["home", "services", "about", "test", "working"]}>
+      <NavBar linkList={["home", "procedimentos", "about", "test", "working"]}>
         <Switch>
           <CustomRoute
             exact
-            path="/services/:serviceID"
+            path="/procedimentos/:serviceID"
             render={(routeProps) => (
               <ServiceComponents
                 serviceID={routeProps.match.params.serviceID}
@@ -31,7 +31,7 @@ function Routes() {
           />
           <CustomRoute exact path="/working" component={WorkingSettings} />
           <CustomRoute exact path="/test" component={DoubtManager} />
-          <CustomRoute exact path="/services" component={ListServices} />
+          <CustomRoute exact path="/procedimentos" component={ListServices} />
           <CustomRoute exact path="/about" component={About} />
           <CustomRoute exact path="/register" component={Register} />
           <CustomRoute exact path="/login" component={Login} />
