@@ -20,6 +20,7 @@ const handleChangeDate = (
   e,
   updateSchedule,
   setUpdateSchedule,
+  dateValeu,
   setDateValeu
 ) => {
   setDateValeu(formateDatePicker(e));
