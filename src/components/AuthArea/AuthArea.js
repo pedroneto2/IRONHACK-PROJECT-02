@@ -42,14 +42,7 @@ const AuthArea = () => {
             >
               Log Out
             </Button>
-            <Link
-              style={{ color: "white" }}
-              to={
-                authentication === "clients"
-                  ? "/clients-settings"
-                  : "/professionals-settings"
-              }
-            >
+            <Link style={{ color: "white" }} to={"/user-home"}>
               <SettingsIcon
                 style={{ marginLeft: "0.5em", transform: "translateY(5px)" }}
               />

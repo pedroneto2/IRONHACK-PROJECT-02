@@ -11,18 +11,6 @@ import { Link } from "react-router-dom";
 
 import axios from "axios";
 
-//PASSAR A FUNÇAO ABAIXO PARA O CADASTRO DOS SERVIÇOS
-const createServiceID = (userCPF, serviceName) => {
-  const servicePart = serviceName.split(" ").join("-").toLowerCase();
-  const cpfArray = userCPF.match(/[0-9]/g);
-  cpfArray.forEach((number, index) => {
-    cpfArray[index] = String.fromCharCode(+number + 97);
-  });
-  const cpfPart = cpfArray.join("");
-  return servicePart + "-" + cpfPart.slice(0, -2);
-};
-//PASSAR A FUNÇAO ACIMA PARA O CADSASTRO DOS SERVIÇOS
-
 const retrieveServices = (setServices, setLoading) => {
   axios
     .get("https://ironrest.herokuapp.com/venere/")
@@ -31,7 +19,7 @@ const retrieveServices = (setServices, setLoading) => {
       response.data.forEach((user) => {
         const newService = {};
         user.services.forEach((service) => {
-          newService.id = createServiceID(user.cpf, service.name);
+          newService.id = user.id;
           newService.user = user.name;
           newService.email = user.email;
           newService.name = service.name;

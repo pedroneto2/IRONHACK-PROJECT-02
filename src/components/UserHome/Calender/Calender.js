@@ -161,7 +161,7 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
+            align={"center"}
             padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -259,7 +259,6 @@ const EnhancedTableToolbar = (props) => {
                 deleteSchedule(
                   user._id,
                   selected,
-                  scheduleRows,
                   setSchedulesRows,
                   userData,
                   setUserData,
@@ -431,21 +430,27 @@ export default function EnhancedTable() {
                         id={labelId}
                         scope="row"
                         padding="none"
+                        sx={{ minWidth: "120px" }}
                       >
                         {formateDate(scheduleRows.date)}
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="center" sx={{ minWidth: "120px" }}>
                         {scheduleRows.clientName}
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="center" sx={{ minWidth: "120px" }}>
                         {scheduleRows.serviceName}
                       </TableCell>
-                      <TableCell align="right">
-                        {scheduleRows.servicePrice.toLocaleString("pt-br", {
-                          minimumFractionDigits: 2,
-                        })}
+                      <TableCell align="center" sx={{ minWidth: "120px" }}>
+                        {Number(scheduleRows.servicePrice).toLocaleString(
+                          "pt-br",
+                          {
+                            minimumFractionDigits: 2,
+                          }
+                        )}
                       </TableCell>
-                      <TableCell align="right">{scheduleRows.status}</TableCell>
+                      <TableCell align="center">
+                        {scheduleRows.status}
+                      </TableCell>
                     </TableRow>
                   );
                 })}
