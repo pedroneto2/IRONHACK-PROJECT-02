@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Container from "@mui/material/Container";
 import { Button } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormGroup from "@mui/material/FormGroup";
+import Switch from "@mui/material/Switch";
 import axios from "axios";
 
 import CalendarSecheduler from "../../CalendarScheduler/CalendarScheduler";
-import Spinner from "../../Spinner/Spinner";
 import { useHistory } from "react-router";
+
+import AuthContext from "../../../store/contexts/AuthContext";
 
 const findSelected = (userData, selected) => {
   if (selected) {
@@ -20,81 +24,92 @@ const handleChange = (e, updateSchedule, setUpdateSchedule) => {
   setUpdateSchedule({ ...updateSchedule, [name]: value });
 };
 
-const updateData = (
+const updateData = async (
   updateSchedule,
-  setEditSchedule,
   userData,
   selected,
-  setSelected,
-  setSchedulesRows,
   date,
   clientID,
-  ProfessionalID,
-  setLoading,
-  history
+  professionalID,
+  history,
+  disabledDate,
+  setLoading
 ) => {
   const confirm = window.confirm("Você tem certeza?");
   if (!confirm) {
     return;
   }
 
-  const dataFiltred = userData.schedule.filter((ele) => {
-    return String(ele.date) !== String(selected[0]);
-  });
+  setLoading(true);
 
-  const mergeData = userData.schedule.find((ele) => {
+  const newSchedule = userData.schedule.find((ele) => {
     return String(ele.date) === String(selected[0]);
   });
 
-  updateSchedule.name && (mergeData["clientName"] = updateSchedule.name);
-  updateSchedule.service && (mergeData["serviceName"] = updateSchedule.service);
-  updateSchedule.value && (mergeData["servicePrice"] = updateSchedule.value);
-  updateSchedule.status && (mergeData["status"] = updateSchedule.status);
+  updateSchedule.name && (newSchedule["clientName"] = updateSchedule.name);
+  updateSchedule.service &&
+    (newSchedule["serviceName"] = updateSchedule.service);
+  updateSchedule.value && (newSchedule["servicePrice"] = updateSchedule.value);
+  updateSchedule.status && (newSchedule["status"] = updateSchedule.status);
 
-  mergeData.date = date;
+  if (!disabledDate) {
+    newSchedule.date = date;
+  }
 
-  const newUserData = {
-    ...userData,
-    schedule: [...dataFiltred, mergeData],
-  };
+  const newProfessionalData = {};
+  const newClientData = {};
 
-  const userId = userData._id;
-  delete newUserData["_id"];
-  const editData = [];
-  setLoading(true);
-  axios
-    .put(`https://ironrest.herokuapp.com/venere/${clientID}`, newUserData)
-    .then(() => {
-      axios
-        .put(
-          `https://ironrest.herokuapp.com/venere/${ProfessionalID}`,
-          newUserData
-        )
-        .then(() => {
-          axios
-            .get(`https://ironrest.herokuapp.com/venere/${userId}`)
-            .then((response) => {
-              selected.shift();
-              setSelected(selected);
-              response.data.schedule.forEach((ele) => {
-                editData.push({
-                  date: ele.date,
-                  clientName: ele.clientName,
-                  serviceName: ele.serviceName,
-                  servicePrice: ele.servicePrice,
-                  status: ele.status,
-                });
-              });
-              setSchedulesRows(editData);
-              setLoading(false);
-              setEditSchedule(false);
-              history.go(0);
-            })
-            .catch((err) => console.log(err));
-        })
-        .catch((err) => console.error(err));
-    })
-    .catch((err) => console.error(err));
+  //RETRIEVE DATA
+  try {
+    await axios
+      .get(`https://ironrest.herokuapp.com/venere/${professionalID}`)
+      .then((response) => {
+        const schedule = response.data.schedule || [];
+        newProfessionalData.schedule = schedule;
+      });
+
+    await axios
+      .get(`https://ironrest.herokuapp.com/venere/${clientID}`)
+      .then((response) => {
+        const schedule = response.data.schedule || [];
+        newClientData.schedule = schedule;
+      });
+  } catch (errors) {
+    console.error(errors);
+  }
+  //TREAT DATA
+
+  newProfessionalData.schedule.find((meeting, index) => {
+    if (meeting.date === selected[0]) {
+      newProfessionalData.schedule.splice(index, 1, newSchedule);
+      return true;
+    }
+    return false;
+  });
+
+  newClientData.schedule.find((meeting, index) => {
+    if (meeting.date === selected[0]) {
+      newClientData.schedule.splice(index, 1, newSchedule);
+      return true;
+    }
+    return false;
+  });
+
+  //SEND DATA
+  try {
+    await axios.put(
+      `https://ironrest.herokuapp.com/venere/${professionalID}`,
+      newProfessionalData
+    );
+
+    await axios.put(
+      `https://ironrest.herokuapp.com/venere/${clientID}`,
+      newClientData
+    );
+  } catch (errors) {
+    console.error(errors);
+  }
+  history.go(0);
 };
 
 const typeStatus = [
@@ -105,24 +120,23 @@ const typeStatus = [
 ];
 
 function FormCalender(props) {
-  const {
-    editSchedule,
-    userData,
-    selected,
-    setSelected,
-    setEditSchedule,
-    setSchedulesRows,
-  } = props;
+  const { editSchedule, setEditSchedule, userData, selected, setLoading } =
+    props;
   const [date, setDate] = useState();
-  const [loading, setLoading] = useState(false);
   const [updateSchedule, setUpdateSchedule] = useState({
     status: "",
   });
-  const [accepted, setAccepted] = useState(false);
+  const [accepted, setAccepted] = useState(true);
+
+  const [disabledDate, setDisabledDate] = useState(true);
 
   const renderUpdate = findSelected(userData, selected[0]);
 
   const history = useHistory();
+
+  const { authentication } = useContext(AuthContext);
+
+  const isClient = authentication === "clients";
 
   if (editSchedule && renderUpdate) {
     return (
@@ -134,6 +148,24 @@ function FormCalender(props) {
             "& .MuiTextField-root": { margin: "5px" },
           }}
         >
+          <FormGroup sx={{ margin: "auto" }}>
+            <FormControlLabel
+              control={
+                <Switch
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setDisabledDate(false);
+                      setAccepted(false);
+                    } else {
+                      setDisabledDate(true);
+                      setAccepted(true);
+                    }
+                  }}
+                />
+              }
+              label="Editar data"
+            />
+          </FormGroup>
           <CalendarSecheduler
             name="date"
             value={date}
@@ -142,6 +174,7 @@ function FormCalender(props) {
             professionalID={renderUpdate.professionalID}
             clientID={renderUpdate.clientID}
             editMode
+            disabled={disabledDate}
           />
           <TextField
             fullWidth
@@ -154,6 +187,7 @@ function FormCalender(props) {
           />
           <TextField
             fullWidth
+            disabled={isClient}
             id="outlined-required"
             label="Serviço"
             name="service"
@@ -163,6 +197,7 @@ function FormCalender(props) {
           />
           <TextField
             fullWidth
+            disabled={isClient}
             id="outlined-required"
             label="Valor"
             name="value"
@@ -172,6 +207,7 @@ function FormCalender(props) {
           />
           <TextField
             fullWidth
+            disabled={isClient}
             id="outlined-required"
             label="Situação"
             value={updateSchedule.status}
@@ -192,34 +228,34 @@ function FormCalender(props) {
             style={{ display: "flex", justifyContent: "flex-end" }}
           >
             <Button
-              disabled={!accepted || loading}
+              disabled={!accepted}
               sx={{ marginBottom: "10px" }}
               variant="outlined"
-              onClick={() => {
-                updateData(
+              onClick={async () => {
+                await updateData(
                   updateSchedule,
-                  setEditSchedule,
                   userData,
                   selected,
-                  setSelected,
-                  setSchedulesRows,
                   date,
                   renderUpdate.clientID,
                   renderUpdate.professionalID,
-                  setLoading,
-                  history
+                  history,
+                  disabledDate,
+                  setLoading
                 );
               }}
             >
-              {loading ? <Spinner size="2em" /> : "Salvar"}
+              Salvar
             </Button>
             <Button
-              disabled={loading}
               sx={{ marginBottom: "10px", width: "90px" }}
               variant="outlined"
-              onClick={() => setEditSchedule(false)}
+              onClick={() => {
+                setDisabledDate(true);
+                setEditSchedule(false);
+              }}
             >
-              {loading ? <Spinner size="2em" /> : "Cancelar"}
+              Cancelar
             </Button>
           </div>
         </Container>

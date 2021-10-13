@@ -51,6 +51,9 @@ const submitValues = (userID, values, setLoading, history) => {
     return;
   }
   setLoading(true);
+  if (!values.advertisings.img) {
+    values.advertisings = {};
+  }
   axios
     .put("https://ironrest.herokuapp.com/venere/" + userID, values)
     .then((response) => {
@@ -198,7 +201,7 @@ const WorkingSettings = () => {
           InputLabelProps={{
             shrink: true,
           }}
-          inputProps={{ maxLength: 100 }}
+          inputProps={{ maxLength: 200 }}
           onChange={(e) =>
             setValues({
               ...values,
@@ -231,7 +234,7 @@ const WorkingSettings = () => {
           </Select>
         </FormControl>
         <TextField
-          label="Descreva seu serviço"
+          label="Texto da propaganda"
           fullWidth
           multiline
           variant="outlined"

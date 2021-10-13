@@ -28,6 +28,8 @@ import AuthContext from "../../../store/contexts/AuthContext";
 import axios from "axios";
 import FormCalender from "./FormCalender";
 
+import Spinner from "../../Spinner/Spinner";
+
 const createRows = (
   userId,
   schedulesRows,
@@ -40,12 +42,15 @@ const createRows = (
   axios
     .get(`https://ironrest.herokuapp.com/venere/${userId}`)
     .then((response) => {
-      setUserData({ ...response.data });
+      const schedule = response.data.schedule || [];
 
-      response.data.schedule.forEach((ele) => {
+      setUserData({ schedule: [...schedule] });
+
+      schedule.forEach((ele) => {
         editData.push({
           date: ele.date,
           clientName: ele.clientName,
+          professionalName: ele.professionalName,
           serviceName: ele.serviceName,
           servicePrice: ele.servicePrice,
           status: ele.status ? ele.status : "Aguardando Pagamento",
@@ -97,39 +102,6 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-const headCells = [
-  {
-    id: "date",
-    numeric: false,
-    disablePadding: true,
-    label: "Data",
-  },
-  {
-    id: "name",
-    numeric: false,
-    disablePadding: false,
-    label: "Nome",
-  },
-  {
-    id: "service",
-    numeric: false,
-    disablePadding: false,
-    label: "Serviço",
-  },
-  {
-    id: "value",
-    numeric: true,
-    disablePadding: false,
-    label: "Valor (R$)",
-  },
-  {
-    id: "status",
-    numeric: false,
-    disablePadding: false,
-    label: "Situação",
-  },
-];
-
 function EnhancedTableHead(props) {
   const {
     onSelectAllClick,
@@ -138,6 +110,7 @@ function EnhancedTableHead(props) {
     numSelected,
     rowCount,
     onRequestSort,
+    headCells,
   } = props;
 
   const createSortHandler = (property) => (event) => {
@@ -198,13 +171,12 @@ const EnhancedTableToolbar = (props) => {
     user,
     numSelected,
     selected,
-    scheduleRows,
-    setSchedulesRows,
     userData,
-    setUserData,
     setSelected,
     editSchedule,
     setEditSchedule,
+    history,
+    setLoading,
   } = props;
 
   return (
@@ -255,15 +227,8 @@ const EnhancedTableToolbar = (props) => {
           </Tooltip>
           <Tooltip title="Delete">
             <IconButton
-              onClick={() => {
-                deleteSchedule(
-                  user._id,
-                  selected,
-                  setSchedulesRows,
-                  userData,
-                  setUserData,
-                  setSelected
-                );
+              onClick={async () => {
+                await deleteSchedule(selected, userData, history, setLoading);
               }}
             >
               <DeleteIcon />
@@ -286,7 +251,7 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function EnhancedTable() {
-  const { user } = React.useContext(AuthContext);
+  const { user, authentication } = React.useContext(AuthContext);
   const history = useHistory();
 
   const [scheduleRows, setSchedulesRows] = React.useState([]);
@@ -298,6 +263,43 @@ export default function EnhancedTable() {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [editSchedule, setEditSchedule] = React.useState(false);
   const [userData, setUserData] = React.useState([]);
+
+  const [loading, setLoading] = React.useState(false);
+
+  const isClient = authentication === "clients";
+
+  const headCells = [
+    {
+      id: "date",
+      numeric: false,
+      disablePadding: true,
+      label: "Data",
+    },
+    {
+      id: "name",
+      numeric: false,
+      disablePadding: false,
+      label: isClient ? "Profissional" : "Cliente",
+    },
+    {
+      id: "service",
+      numeric: false,
+      disablePadding: false,
+      label: "Serviço",
+    },
+    {
+      id: "value",
+      numeric: true,
+      disablePadding: false,
+      label: "Valor (R$)",
+    },
+    {
+      id: "status",
+      numeric: false,
+      disablePadding: false,
+      label: "Situação",
+    },
+  ];
 
   React.useEffect(() => {
     createRows(user._id, scheduleRows, setSchedulesRows, userData, setUserData);
@@ -357,16 +359,16 @@ export default function EnhancedTable() {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - scheduleRows.length) : 0;
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Box>
       <FormCalender
         editSchedule={editSchedule}
         setEditSchedule={setEditSchedule}
         userData={userData}
         selected={selected}
-        setSelected={setSelected}
-        setUserData={setUserData}
-        setSchedulesRows={setSchedulesRows}
+        setLoading={setLoading}
       />
 
       <Paper sx={{ width: "100%", mb: 2 }}>
@@ -374,14 +376,13 @@ export default function EnhancedTable() {
           numSelected={selected.length}
           selected={selected}
           scheduleRows={scheduleRows}
-          setSchedulesRows={setSchedulesRows}
           user={user}
           userData={userData}
-          setUserData={setUserData}
           setSelected={setSelected}
           editSchedule={editSchedule}
           setEditSchedule={setEditSchedule}
           history={history}
+          setLoading={setLoading}
         />
         <TableContainer>
           <Table
@@ -396,6 +397,7 @@ export default function EnhancedTable() {
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
               rowCount={scheduleRows.length}
+              headCells={headCells}
             />
             <TableBody>
               {/* if you don't need to support IE11, you can replace the `stableSort` call with:
@@ -430,17 +432,19 @@ export default function EnhancedTable() {
                         id={labelId}
                         scope="row"
                         padding="none"
-                        sx={{ minWidth: "120px" }}
+                        sx={{ minWidth: "125px" }}
                       >
                         {formateDate(scheduleRows.date)}
                       </TableCell>
-                      <TableCell align="center" sx={{ minWidth: "120px" }}>
-                        {scheduleRows.clientName}
+                      <TableCell align="center" sx={{ minWidth: "125px" }}>
+                        {isClient
+                          ? scheduleRows.professionalName
+                          : scheduleRows.clientName}
                       </TableCell>
-                      <TableCell align="center" sx={{ minWidth: "120px" }}>
+                      <TableCell align="center" sx={{ minWidth: "125px" }}>
                         {scheduleRows.serviceName}
                       </TableCell>
-                      <TableCell align="center" sx={{ minWidth: "120px" }}>
+                      <TableCell align="center" sx={{ minWidth: "125px" }}>
                         {Number(scheduleRows.servicePrice).toLocaleString(
                           "pt-br",
                           {

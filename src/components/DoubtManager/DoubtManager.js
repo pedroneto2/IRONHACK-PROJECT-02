@@ -83,19 +83,21 @@ const DoubtManager = () => {
                 width: "75%",
                 minWidth: "275px",
               }}
-              align="center"
             >
-              <Typography variant="h6" color="primary" align="left">
-                Name: {doubt.name}
+              <Typography variant="h6" color="primary" fontSize="1.1em">
+                Nome: {doubt.name}
               </Typography>
-              <Typography variant="h6" color="primary" align="left">
+              <Typography variant="h6" color="primary" fontSize="1.1em">
                 Email: {doubt.email}
+              </Typography>
+              <Typography variant="h6" color="primary" fontSize="1.1em">
+                Serviço: {doubt.serviceName}
               </Typography>
               <Divider />
               <Typography
                 variant="h6"
                 color="primary"
-                align="left"
+                fontSize="1.1em"
                 sx={{ marginTop: "0.5em", marginLeft: "1em" }}
               >
                 Dúvida:

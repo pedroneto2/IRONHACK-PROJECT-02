@@ -8,10 +8,6 @@ import About from "./components/About/About";
 import ListServices from "./components/ListServices/ListServices";
 import ServiceComponents from "./components/ServiceComponent/ServiceComponent";
 
-//import TesterComponent from "./components/TesterComponent/TesterComponent";
-import WorkingSettings from "./components/WorkingSettings/WorkingSettings";
-import DoubtManager from "./components/DoubtManager/DoubtManager";
-
 import { Switch, Redirect } from "react-router-dom";
 
 import CustomRoute from "./utils/CustomRoute";
@@ -36,7 +32,7 @@ function Routes() {
           <CustomRoute exact path="/login" component={Login} />
           <CustomRoute
             exact
-            path="/user-home" 
+            path="/user-home"
             render={() => <UserHome defaultTab={0} />}
           />
           <CustomRoute exact path="/home" component={Home} />

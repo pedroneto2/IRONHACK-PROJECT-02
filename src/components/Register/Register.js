@@ -19,8 +19,12 @@ import { telMask } from "./telMask";
 
 const INITIAL_CREDENTIALS = {
   name: "",
+  cpf: "",
+  email: "",
   telephone: "",
   address: "",
+  password: "",
+  repeatPassword: "",
   profileType: "clients",
 };
 

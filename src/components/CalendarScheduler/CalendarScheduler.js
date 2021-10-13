@@ -81,6 +81,7 @@ const CalendarSecheduler = ({
   clientID,
   professionalID,
   editMode,
+  disabled,
 }) => {
   const [loading, setLoading] = useState(true);
 
@@ -134,6 +135,7 @@ const CalendarSecheduler = ({
               }}
             />
           )}
+          disabled={disabled}
           showToolbar={false}
           ampm={false}
           onAccept={() => setAccepted(true)}

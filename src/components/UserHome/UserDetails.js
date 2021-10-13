@@ -32,7 +32,6 @@ const updateData = (userID, data, setData, setLoading) => {
   if (!confirm) {
     return;
   }
-  console.log(data);
   setLoading(true);
   axios
     .put("https://ironrest.herokuapp.com/venere/" + userID, data)

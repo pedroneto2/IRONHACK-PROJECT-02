@@ -9,6 +9,7 @@ import "./ScheduleService.css";
 const sendSchedule = (
   date,
   professionalID,
+  professionalName,
   professionalEmail,
   clientID,
   clientEmail,
@@ -36,6 +37,7 @@ const sendSchedule = (
     servicePrice: servicePrice,
     serviceName: serviceName,
     professionalID: professionalID,
+    professionalName: professionalName,
     clientID: clientID,
   };
   const newProfessionalSchedule = [...professionalSchedule, { ...schedule }];
@@ -62,6 +64,7 @@ const sendSchedule = (
 const ScheduleService = ({
   professionalID,
   clientID,
+  professionalName,
   professionalEmail,
   clientEmail,
   clientName,
@@ -101,6 +104,7 @@ const ScheduleService = ({
           sendSchedule(
             date,
             professionalID,
+            professionalName,
             professionalEmail,
             clientID,
             clientEmail,

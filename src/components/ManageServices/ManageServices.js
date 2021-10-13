@@ -28,7 +28,7 @@ const retrieveData = (userID, setServices, setLoadingBtn) => {
   axios
     .get("https://ironrest.herokuapp.com/venere/" + userID)
     .then((response) => {
-      setServices([...response.data.services]);
+      response.data.services && setServices([...response.data.services]);
       setLoadingBtn && setLoadingBtn(false);
     })
     .catch((error) => {
@@ -203,6 +203,7 @@ const ManageServices = () => {
               value={service.description}
               label="Descrição"
               name="description"
+              multiline
               rows={3}
               variant="outlined"
               color="primary"

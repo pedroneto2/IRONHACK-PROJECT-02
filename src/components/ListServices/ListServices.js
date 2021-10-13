@@ -17,18 +17,20 @@ const retrieveServices = (setServices, setLoading) => {
     .then((response) => {
       const services = [];
       response.data.forEach((user) => {
-        const newService = {};
-        user.services.forEach((service) => {
-          newService.id = user.id;
-          newService.user = user.name;
-          newService.email = user.email;
-          newService.name = service.name;
-          newService.price = service.price;
-          newService.duration = service.duration;
-          newService.category = service.category;
-        });
-        services.push(newService);
+        user.services &&
+          user.services.forEach((service) => {
+            const newService = {};
+            newService.id = service.id;
+            newService.user = user.name;
+            newService.email = user.email;
+            newService.name = service.name;
+            newService.price = service.price;
+            newService.duration = service.duration;
+            newService.category = service.category;
+            services.push(newService);
+          });
       });
+
       setServices(services);
       setLoading(false);
     })
@@ -86,7 +88,12 @@ const ListServices = () => {
                     to={"/procedimentos/" + service.id}
                     style={{ textDecoration: "none" }}
                   >
-                    <Button variant="outlined" color="primary">
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      color="primary"
+                      sx={{ fontSize: "0.6em", padding: 0 }}
+                    >
                       Detalhes
                     </Button>
                   </Link>
@@ -107,7 +114,7 @@ const ListServices = () => {
                 </Typography>
                 <Typography color="black" variant="p">
                   <strong>Preço:</strong>{" "}
-                  {service.price.toLocaleString("pt-br", {
+                  {Number(service.price).toLocaleString("pt-br", {
                     style: "currency",
                     currency: "BRL",
                   })}

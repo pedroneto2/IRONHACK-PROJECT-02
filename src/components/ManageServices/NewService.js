@@ -153,6 +153,7 @@ const NewService = ({
         value={newService.description}
         label="Descrição"
         name="description"
+        multiline
         rows={3}
         variant="outlined"
         color="primary"
