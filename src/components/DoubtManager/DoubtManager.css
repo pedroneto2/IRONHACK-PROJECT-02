@@ -1,7 +1,6 @@
 .doubt-manager-container {
   box-shadow: 5px 5px 5px 5px rgba(50, 50, 50, 0.5);
-  width: 75%;
-  min-width: 325px;
+  min-width: 310px;
   margin: 1em auto;
   padding: 1em;
   display: flex;

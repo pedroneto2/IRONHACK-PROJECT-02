@@ -57,14 +57,16 @@ const retrieveDisabledHours = (
   currentDate,
   setDisabledHours,
   clientSchedule,
-  professionalSchedule
+  professionalSchedule,
+  editMode
 ) => {
   const allDisabledHours = [];
   const allDisabledDateHours = [...clientSchedule, ...professionalSchedule];
   allDisabledDateHours.forEach((date) => {
     if (new Date(date.date).getDate() === currentDate.getDate()) {
       const disabledHour = new Date(date.date).getHours();
-      for (let i = 0; i < date.duration; i++) {
+      const duration = editMode ? 1 : date.duration;
+      for (let i = 0; i < duration; i++) {
         allDisabledHours.push(disabledHour + i);
       }
     }
@@ -78,6 +80,8 @@ const CalendarSecheduler = ({
   setAccepted,
   clientID,
   professionalID,
+  editMode,
+  disabled,
 }) => {
   const [loading, setLoading] = useState(true);
 
@@ -111,7 +115,8 @@ const CalendarSecheduler = ({
       value,
       setDisabledHours,
       clientUser.schedule,
-      professionalUser.schedule
+      professionalUser.schedule,
+      editMode
     );
   }, [value]);
 
@@ -130,6 +135,7 @@ const CalendarSecheduler = ({
               }}
             />
           )}
+          disabled={disabled}
           showToolbar={false}
           ampm={false}
           onAccept={() => setAccepted(true)}

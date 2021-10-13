@@ -20,6 +20,7 @@ const retrieveAdvertisings = (
       response.data.forEach(
         (user) =>
           user.advertisings &&
+          user.advertisings.img &&
           advertisings.push({
             img: user.advertisings.img,
             user: user.name,
@@ -47,7 +48,8 @@ const rotatesAds = (
   let rotatedAds = advertisings.slice(0, qtyRendered);
   setRenderedAds([...rotatedAds]);
   const intervalID = setInterval(() => {
-    advertisings.push(advertisings.shift());
+    const lastQueuedAd = advertisings.shift();
+    lastQueuedAd && advertisings.push(lastQueuedAd);
     setAdvertisings([...advertisings]);
     rotatedAds = advertisings.slice(0, qtyRendered);
     setRenderedAds([...rotatedAds]);

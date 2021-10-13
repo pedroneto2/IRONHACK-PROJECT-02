@@ -11,36 +11,26 @@ import { Link } from "react-router-dom";
 
 import axios from "axios";
 
-//PASSAR A FUNÇAO ABAIXO PARA O CADASTRO DOS SERVIÇOS
-const createServiceID = (userCPF, serviceName) => {
-  const servicePart = serviceName.split(" ").join("-").toLowerCase();
-  const cpfArray = userCPF.match(/[0-9]/g);
-  cpfArray.forEach((number, index) => {
-    cpfArray[index] = String.fromCharCode(+number + 97);
-  });
-  const cpfPart = cpfArray.join("");
-  return servicePart + "-" + cpfPart.slice(0, -2);
-};
-//PASSAR A FUNÇAO ACIMA PARA O CADSASTRO DOS SERVIÇOS
-
 const retrieveServices = (setServices, setLoading) => {
   axios
     .get("https://ironrest.herokuapp.com/venere/")
     .then((response) => {
       const services = [];
       response.data.forEach((user) => {
-        const newService = {};
-        user.services.forEach((service) => {
-          newService.id = createServiceID(user.cpf, service.name);
-          newService.user = user.name;
-          newService.email = user.email;
-          newService.name = service.name;
-          newService.price = service.price;
-          newService.duration = service.duration;
-          newService.category = service.category;
-        });
-        services.push(newService);
+        user.services &&
+          user.services.forEach((service) => {
+            const newService = {};
+            newService.id = service.id;
+            newService.user = user.name;
+            newService.email = user.email;
+            newService.name = service.name;
+            newService.price = service.price;
+            newService.duration = service.duration;
+            newService.category = service.category;
+            services.push(newService);
+          });
       });
+
       setServices(services);
       setLoading(false);
     })
@@ -98,7 +88,12 @@ const ListServices = () => {
                     to={"/procedimentos/" + service.id}
                     style={{ textDecoration: "none" }}
                   >
-                    <Button variant="outlined" color="primary">
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      color="primary"
+                      sx={{ fontSize: "0.6em", padding: 0 }}
+                    >
                       Detalhes
                     </Button>
                   </Link>
@@ -119,7 +114,7 @@ const ListServices = () => {
                 </Typography>
                 <Typography color="black" variant="p">
                   <strong>Preço:</strong>{" "}
-                  {service.price.toLocaleString("pt-br", {
+                  {Number(service.price).toLocaleString("pt-br", {
                     style: "currency",
                     currency: "BRL",
                   })}

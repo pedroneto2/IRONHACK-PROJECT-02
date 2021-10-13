@@ -3,8 +3,14 @@ import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import ProfessionalDetails from "./ProfessionalDetails";
+import UserDetails from "./UserDetails";
 import Calendar from "./Calender/Calender";
+import DoubtManager from "../DoubtManager/DoubtManager";
+import WorkingSettings from "../WorkingSettings/WorkingSettings";
+import ManageServices from "../ManageServices/ManageServices";
+
+import AuthContext from "../../store/contexts/AuthContext";
+import { Redirect } from "react-router";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -38,9 +44,17 @@ function a11yProps(index) {
 export default function VerticalTabs(props) {
   const [value, setValue] = React.useState(Number(props.defaultTab));
 
+  const { authentication } = React.useContext(AuthContext);
+
+  const isProfessional = authentication === "professionals";
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  if (!authentication) {
+    return <Redirect to={"/home"} />;
+  }
 
   return (
     <div
@@ -52,7 +66,8 @@ export default function VerticalTabs(props) {
     >
       <Box
         sx={{
-          flexGrow: 1,
+          width: "100%",
+          minWidth: "325px",
           bgcolor: "background.paper",
           margin: "auto",
         }}
@@ -66,27 +81,32 @@ export default function VerticalTabs(props) {
           sx={{
             borderRight: 1,
             borderColor: "divider",
-
-            width: "fit-content",
             margin: "auto",
+            maxWidth: "750px",
           }}
         >
           <Tab label="Detalhes" {...a11yProps(0)} />
           <Tab label="Agenda" {...a11yProps(1)} />
-          <Tab label="Serviços" {...a11yProps(2)} />
-          <Tab label="Dúvidas" {...a11yProps(3)} />
+          {isProfessional && <Tab label="Serviços" {...a11yProps(2)} />}
+          {isProfessional && <Tab label="Dúvidas" {...a11yProps(3)} />}
+          {isProfessional && (
+            <Tab label="Configurações de Trabalho" {...a11yProps(4)} />
+          )}
         </Tabs>
         <TabPanel value={value} index={0}>
-          <ProfessionalDetails />
+          <UserDetails />
         </TabPanel>
         <TabPanel value={value} index={1}>
           <Calendar />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          Serviços
+          <ManageServices />
         </TabPanel>
         <TabPanel value={value} index={3}>
-          Duvidas
+          <DoubtManager />
+        </TabPanel>
+        <TabPanel value={value} index={4}>
+          <WorkingSettings />
         </TabPanel>
       </Box>
     </div>

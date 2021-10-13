@@ -57,7 +57,12 @@ function NavBar({ linkList = [], children }) {
           <Toolbar sx={{ justifyContent: "space-between" }}>
             <div className="nav-bar-logo-links-container">
               <Link to={"/"}>
-                <Typography variant="h3" noWrap component="div">
+                <Typography
+                  variant="h3"
+                  noWrap
+                  component="div"
+                  sx={{ marginRight: "0.25em" }}
+                >
                   Venere
                 </Typography>
               </Link>
@@ -80,9 +85,9 @@ function NavBar({ linkList = [], children }) {
             </IconButton>
             <Box
               sx={{
-                display: { xs: "none", sm: "block" },
-                minWidth: "225px",
-                textAlign: "right",
+                display: { xs: "none", sm: "flex" },
+                minWidth: "165px",
+                justifyContent: "right",
               }}
             >
               <AuthArea />

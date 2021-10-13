@@ -51,6 +51,9 @@ const submitValues = (userID, values, setLoading, history) => {
     return;
   }
   setLoading(true);
+  if (!values.advertisings.img) {
+    values.advertisings = {};
+  }
   axios
     .put("https://ironrest.herokuapp.com/venere/" + userID, values)
     .then((response) => {
@@ -131,7 +134,7 @@ const WorkingSettings = () => {
   ) : (
     <div className="working-settings-container">
       <Typography
-        variant="h4"
+        variant="h5"
         color="primary"
         align="center"
         sx={{ margin: "1em auto" }}
@@ -145,15 +148,18 @@ const WorkingSettings = () => {
           size="small"
           variant="outlined"
           color="primary"
+          label="dias"
           value={values.maxDays}
           onChange={(e) => setValues({ ...values, maxDays: +e.target.value })}
           inputProps={{ maxLength: 3 }}
+          InputLabelProps={{
+            shrink: true,
+          }}
           sx={{
             width: "55px",
             transform: "translateY(-10px)",
           }}
         />
-        <Typography variant="p"> dias</Typography>
       </div>
       <DateTimeEditor
         titleText={"Dias que não poderei agendar serviços:"}
@@ -165,7 +171,7 @@ const WorkingSettings = () => {
         DateTimePicker={DatePicker}
       />
       <div className="week-not-working-days-container">
-        <Typography variant="h7" color="primary" sx={{ margin: "1em" }}>
+        <Typography variant="h7" color="primary" sx={{ marginTop: "2em" }}>
           Dias da semana que não trabalho:
         </Typography>
         <div className="week-not-working-days-switches-container">
@@ -195,7 +201,7 @@ const WorkingSettings = () => {
           InputLabelProps={{
             shrink: true,
           }}
-          inputProps={{ maxLength: 100 }}
+          inputProps={{ maxLength: 200 }}
           onChange={(e) =>
             setValues({
               ...values,
@@ -228,7 +234,7 @@ const WorkingSettings = () => {
           </Select>
         </FormControl>
         <TextField
-          label="Descreva seu serviço"
+          label="Texto da propaganda"
           fullWidth
           multiline
           variant="outlined"

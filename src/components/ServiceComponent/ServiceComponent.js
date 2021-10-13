@@ -49,6 +49,7 @@ const validateDoubts = (doubtField) => {
 
 const sendDoubts = (
   userID,
+  serviceName,
   doubts,
   doubtField,
   setDoubtField,
@@ -59,7 +60,7 @@ const sendDoubts = (
     return;
   }
   setLoadingDoubt(true);
-  const newDoubt = [...doubts, { ...doubtField }];
+  const newDoubt = [...doubts, { ...doubtField, serviceName }];
   axios
     .put("https://ironrest.herokuapp.com/venere/" + userID, {
       doubts: newDoubt,
@@ -67,6 +68,7 @@ const sendDoubts = (
     .then((response) => {
       setLoadingDoubt(false);
       setDoubtField({ ...DOUBT_INITIAL_STATE });
+      window.alert("Dúvida enviada!");
     })
     .catch((error) => console.log(error));
 };
@@ -78,18 +80,19 @@ const retrieveService = (setService, setLoading, setDoubts, serviceID) => {
       let targetService;
       let doubts = [];
       response.data.forEach((user) => {
-        user.services.find((service) => {
-          if (service.id === serviceID) {
-            targetService = service;
-            targetService.professional = user.name;
-            targetService.professionalEmail = user.email;
-            targetService.professionalID = user._id;
-            targetService.schedule = user.schedule;
-            doubts = user.doubts || [];
-            return true;
-          }
-          return false;
-        });
+        user.services &&
+          user.services.find((service) => {
+            if (service.id === serviceID) {
+              targetService = service;
+              targetService.professional = user.name;
+              targetService.professionalEmail = user.email;
+              targetService.professionalID = user._id;
+              targetService.schedule = user.schedule;
+              doubts = user.doubts || [];
+              return true;
+            }
+            return false;
+          });
       });
       setDoubts([...doubts]);
       setService(targetService);
@@ -106,8 +109,9 @@ const handleChangeDoubts = (e, doubtField, setDoubtField) => {
 const renderScheduler = (
   authentication,
   professionalID,
-  clientID,
   professionalEmail,
+  clientID,
+  professionalName,
   clientEmail,
   clientName,
   servicePrice,
@@ -126,6 +130,7 @@ const renderScheduler = (
     <ScheduleService
       professionalID={professionalID}
       clientID={clientID}
+      professionalName={professionalName}
       professionalEmail={professionalEmail}
       clientEmail={clientEmail}
       clientName={clientName}
@@ -181,7 +186,12 @@ const ServiceComponents = ({ serviceID }) => {
             {service.name}
           </Typography>
           <Link to={"/procedimentos/"} style={{ textDecoration: "none" }}>
-            <Button variant="outlined" color="primary">
+            <Button
+              size="small"
+              variant="outlined"
+              color="primary"
+              sx={{ fontSize: "0.65em", padding: "0.1em" }}
+            >
               procedimentos
             </Button>
           </Link>
@@ -202,7 +212,7 @@ const ServiceComponents = ({ serviceID }) => {
         </Typography>
         <Typography color="black" variant="p">
           <strong>Preço:</strong>{" "}
-          {service.price.toLocaleString("pt-br", {
+          {Number(service.price).toLocaleString("pt-br", {
             style: "currency",
             currency: "BRL",
           })}
@@ -214,8 +224,9 @@ const ServiceComponents = ({ serviceID }) => {
           {renderScheduler(
             authentication,
             service.professionalID,
-            user._id,
             service.professionalEmail,
+            user._id,
+            service.professional,
             user.email,
             user.name,
             service.price,
@@ -279,6 +290,7 @@ const ServiceComponents = ({ serviceID }) => {
               onClick={() =>
                 sendDoubts(
                   service.professionalID,
+                  service.name,
                   doubts,
                   doubtField,
                   setDoubtField,

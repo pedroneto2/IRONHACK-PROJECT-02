@@ -1,0 +1,5 @@
+.div-home-professional {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
