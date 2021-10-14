@@ -82,6 +82,33 @@ const editService = (userID, services, index, setServices, setLoadingBtn) => {
     setServices([...services]);
     return;
   }
+
+  let repeatedServiceName = false;
+
+  services.find((service2, index2) => {
+    if (index2 === index) return false;
+    if (service2.name === services[index].name) {
+      repeatedServiceName = true;
+      return true;
+    }
+    return false;
+  });
+
+  if (repeatedServiceName) {
+    window.alert("Este serviço já existe!");
+    return;
+  }
+
+  if (Object.values(services[index]).some((value) => !value)) {
+    window.alert("Preencha todos os campos!");
+    return;
+  }
+
+  const confirm = window.confirm("Você tem certeza?");
+  if (!confirm) {
+    return;
+  }
+
   services[index].editable = false;
   setLoadingBtn(true);
   axios

@@ -65,7 +65,7 @@ const retrieveDisabledHours = (
   allDisabledDateHours.forEach((date) => {
     if (new Date(date.date).getDate() === currentDate.getDate()) {
       const disabledHour = new Date(date.date).getHours();
-      const duration = editMode ? 1 : date.duration;
+      const duration = editMode === date.date ? 1 : date.duration;
       for (let i = 0; i < duration; i++) {
         allDisabledHours.push(disabledHour + i);
       }

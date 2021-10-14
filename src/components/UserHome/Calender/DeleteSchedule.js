@@ -13,69 +13,72 @@ export default async function deleteSchedule(
   }
 
   setLoading(true);
-  const newProfessionalData = {};
-  const newClientData = {};
 
-  let professionalID;
-  let clientID;
-  userData.schedule.find((elem) => {
-    if (elem.date === selected[0]) {
-      professionalID = elem.professionalID;
-      clientID = elem.clientID;
-      return true;
+  for (let i = 0; i < selected.length; i++) {
+    const newProfessionalData = {};
+    const newClientData = {};
+
+    let professionalID;
+    let clientID;
+    userData.schedule.find((elem) => {
+      if (elem.date === selected[i]) {
+        professionalID = elem.professionalID;
+        clientID = elem.clientID;
+        return true;
+      }
+      return false;
+    });
+
+    //RETRIEVE DATA
+    try {
+      await axios
+        .get(`https://ironrest.herokuapp.com/venere/${professionalID}`)
+        .then((response) => {
+          const schedule = response.data.schedule || [];
+          newProfessionalData.schedule = schedule;
+        });
+
+      await axios
+        .get(`https://ironrest.herokuapp.com/venere/${clientID}`)
+        .then((response) => {
+          const schedule = response.data.schedule || [];
+          newClientData.schedule = schedule;
+        });
+    } catch (errors) {
+      console.error(errors);
     }
-    return false;
-  });
+    //TREAT DATA
 
-  //RETRIEVE DATA
-  try {
-    await axios
-      .get(`https://ironrest.herokuapp.com/venere/${professionalID}`)
-      .then((response) => {
-        const schedule = response.data.schedule || [];
-        newProfessionalData.schedule = schedule;
-      });
+    newProfessionalData.schedule.find((meeting, index) => {
+      if (meeting.date === selected[i]) {
+        newProfessionalData.schedule.splice(index, 1);
+        return true;
+      }
+      return false;
+    });
 
-    await axios
-      .get(`https://ironrest.herokuapp.com/venere/${clientID}`)
-      .then((response) => {
-        const schedule = response.data.schedule || [];
-        newClientData.schedule = schedule;
-      });
-  } catch (errors) {
-    console.error(errors);
-  }
-  //TREAT DATA
+    newClientData.schedule.find((meeting, index) => {
+      if (meeting.date === selected[i]) {
+        newClientData.schedule.splice(index, 1);
+        return true;
+      }
+      return false;
+    });
 
-  newProfessionalData.schedule.find((meeting, index) => {
-    if (meeting.date === selected[0]) {
-      newProfessionalData.schedule.splice(index, 1);
-      return true;
+    //SEND DATA
+    try {
+      await axios.put(
+        `https://ironrest.herokuapp.com/venere/${professionalID}`,
+        newProfessionalData
+      );
+
+      await axios.put(
+        `https://ironrest.herokuapp.com/venere/${clientID}`,
+        newClientData
+      );
+    } catch (errors) {
+      console.error(errors);
     }
-    return false;
-  });
-
-  newClientData.schedule.find((meeting, index) => {
-    if (meeting.date === selected[0]) {
-      newClientData.schedule.splice(index, 1);
-      return true;
-    }
-    return false;
-  });
-
-  //SEND DATA
-  try {
-    await axios.put(
-      `https://ironrest.herokuapp.com/venere/${professionalID}`,
-      newProfessionalData
-    );
-
-    await axios.put(
-      `https://ironrest.herokuapp.com/venere/${clientID}`,
-      newClientData
-    );
-  } catch (errors) {
-    console.error(errors);
   }
   history.go(0);
 }

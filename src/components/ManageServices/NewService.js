@@ -36,6 +36,21 @@ const handleSubmit = (
   refresh,
   setLoading
 ) => {
+  let repeatedServiceName = false;
+
+  services.find((service) => {
+    if (service.name === newService.name) {
+      repeatedServiceName = true;
+      return true;
+    }
+    return false;
+  });
+
+  if (repeatedServiceName) {
+    window.alert("Este serviço já existe!");
+    return;
+  }
+
   if (Object.values(newService).some((value) => !value)) {
     window.alert("Preencha todos os campos!");
     return;

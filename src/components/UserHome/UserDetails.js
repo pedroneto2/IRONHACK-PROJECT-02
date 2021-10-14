@@ -27,20 +27,22 @@ const retrieveData = (userID, setData, setLoading) => {
     });
 };
 
-const updateData = (userID, data, setData, setLoading) => {
+const updateData = (userID, data, setData, setLoading, setDisabledTabs) => {
   const confirm = window.confirm("Você tem certeza?");
   if (!confirm) {
     return;
   }
   setLoading(true);
+  setDisabledTabs(true);
   axios
     .put("https://ironrest.herokuapp.com/venere/" + userID, data)
     .then((response) => {
       window.alert("Dados editados!");
-      retrieveData(userID, setData, setLoading);
+      retrieveData(userID, setData, setLoading, setDisabledTabs);
     })
     .catch((error) => {
       setLoading(false);
+      setDisabledTabs(false);
       console.log(error);
     });
 };
@@ -66,7 +68,10 @@ function ProfessionalDetails() {
   const [loading, setLoading] = useState(true);
 
   React.useEffect(() => {
+    // let source = axios.CancelToken.source(); como CANCELAR um AXIOS REQUEST?
+    // let config = { cancelToken: source.token };
     retrieveData(user._id, setData, setLoading);
+    //return source.cancel();
   }, []);
 
   return loading ? (

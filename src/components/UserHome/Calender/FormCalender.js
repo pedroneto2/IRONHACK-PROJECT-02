@@ -173,7 +173,7 @@ function FormCalender(props) {
             setAccepted={setAccepted}
             professionalID={renderUpdate.professionalID}
             clientID={renderUpdate.clientID}
-            editMode
+            editMode={selected[0]}
             disabled={disabledDate}
           />
           <TextField
