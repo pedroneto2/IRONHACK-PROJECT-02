@@ -168,11 +168,9 @@ EnhancedTableHead.propTypes = {
 
 const EnhancedTableToolbar = (props) => {
   const {
-    user,
     numSelected,
     selected,
     userData,
-    setSelected,
     editSchedule,
     setEditSchedule,
     history,
@@ -376,9 +374,7 @@ export default function EnhancedTable() {
           numSelected={selected.length}
           selected={selected}
           scheduleRows={scheduleRows}
-          user={user}
           userData={userData}
-          setSelected={setSelected}
           editSchedule={editSchedule}
           setEditSchedule={setEditSchedule}
           history={history}
