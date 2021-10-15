@@ -27,22 +27,20 @@ const retrieveData = (userID, setData, setLoading) => {
     });
 };
 
-const updateData = (userID, data, setData, setLoading, setDisabledTabs) => {
+const updateData = (userID, data, setData, setLoading) => {
   const confirm = window.confirm("Você tem certeza?");
   if (!confirm) {
     return;
   }
   setLoading(true);
-  setDisabledTabs(true);
   axios
     .put("https://ironrest.herokuapp.com/venere/" + userID, data)
     .then((response) => {
       window.alert("Dados editados!");
-      retrieveData(userID, setData, setLoading, setDisabledTabs);
+      retrieveData(userID, setData, setLoading);
     })
     .catch((error) => {
       setLoading(false);
-      setDisabledTabs(false);
       console.log(error);
     });
 };
